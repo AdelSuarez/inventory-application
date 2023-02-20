@@ -1,5 +1,6 @@
 import customtkinter
-from components.NavBar import Navbar 
+from components.NavBar import Navbar
+from components.NotificationBar import NotificationBar
 
 class Manager(customtkinter.CTk):
     def __init__(self):
@@ -9,7 +10,8 @@ class Manager(customtkinter.CTk):
         self._configure_self()
         self.container.pack(expand=True, fill=customtkinter.BOTH)
 
-        self.my_frame = Navbar(master=self.container)
+        self.navbar = Navbar(master=self.container)
+        self.notification_bar = NotificationBar(master=self.container )
 
     def _configure_win(self):
         """Main window setting"""
@@ -22,5 +24,5 @@ class Manager(customtkinter.CTk):
         """Configuration of the upper menu, so that it is expandible"""
         self.container.columnconfigure(0, weight=1)
         self.container.rowconfigure(0, minsize=70)
-        self.container.rowconfigure(1, weight=1)
+        self.container.rowconfigure(1, weight=1,)
         self.container.rowconfigure(2, minsize=20)
