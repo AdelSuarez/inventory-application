@@ -28,7 +28,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self.dni_entry = customtkinter.CTkEntry(self._controller, placeholder_text="DNI", height=40)
         self.dni_entry.grid(row=3, column=0, pady=(10,0), padx=(20, 10), sticky=customtkinter.NSEW)
 
-        self.tlf_entry = customtkinter.CTkEntry(self._controller, placeholder_text="Numero telefonico", height=40)
+        self.tlf_entry = customtkinter.CTkEntry(self._controller, placeholder_text="Número telefonico", height=40)
         self.tlf_entry.grid(row=3, column=1, pady=(10,0), padx=(0, 20), sticky=customtkinter.NSEW)
 
         self.locatiom = customtkinter.CTkOptionMenu(self._controller, 
@@ -37,7 +37,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self.locatiom.grid(row=4, column=1,pady=10,padx=(0,20), sticky=customtkinter.W)
         self.locatiom.set("option 2")
 
-        self.btn_add_location = customtkinter.CTkButton(self._controller, text="Agregar", command=self._add_location)
+        self.btn_add_location = customtkinter.CTkButton(self._controller, text="Agregar ubicación", command=self._add_location)
         self.btn_add_location.grid(row=4, column=0,pady=10, padx=(20,10), sticky=customtkinter.E)
 
         self.megas_entry = customtkinter.CTkEntry(self._controller, placeholder_text="Megas", height=40)
@@ -46,8 +46,15 @@ class HomeScreen(customtkinter.CTkFrame):
         self.ip_entry = customtkinter.CTkEntry(self._controller, placeholder_text="IP", height=40)
         self.ip_entry.grid(row=5, column=1, padx=(0, 20), sticky=customtkinter.NSEW)
 
+        self.btn_add_location = customtkinter.CTkButton(self._controller, text="Crear cliente", command=self._add_client)
+        self.btn_add_location.grid(row=6, column=0, columnspan=2, padx=20, pady=10, sticky=customtkinter.NSEW)
+
         self._controller.columnconfigure(0, weight=1)
         self._controller.columnconfigure(1, weight=1)
+
+
+    def _add_client(self):
+        print(self.name_entry.get())
 
     def _add_location(self):
         dialog = customtkinter.CTkInputDialog(text="Ingrese la nueva ubicación:", title="Nueva Ubicación")
