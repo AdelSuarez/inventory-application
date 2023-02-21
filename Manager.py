@@ -1,6 +1,8 @@
 import customtkinter
 from components.NavBar import Navbar
 from components.NotificationBar import NotificationBar
+from screens.Home import HomeScreen
+customtkinter.set_appearance_mode("System")
 
 class Manager(customtkinter.CTk):
     def __init__(self):
@@ -9,8 +11,11 @@ class Manager(customtkinter.CTk):
         self._configure_win()
         self._configure_self()
         self.container.pack(expand=True, fill=customtkinter.BOTH)
+        self._win()
 
+    def _win(self):
         self.navbar = Navbar(master=self.container)
+        self.Home = HomeScreen(master=self.container)
         self.notification_bar = NotificationBar(master=self.container )
 
     def _configure_win(self):
