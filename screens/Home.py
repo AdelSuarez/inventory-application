@@ -24,6 +24,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self.tabview.tab("Configuraciones de Ubicacion").grid_columnconfigure(0, weight=1)
         self._view_client(self.tabview.tab('Datos de cliente'))
         self._create_client(self.tabview.tab('Crear cliente'))
+        self._location_settings_view(self.tabview.tab('Configuraciones de Ubicacion'))
 
         self._controller.columnconfigure(0, weight=1)
         self._controller.columnconfigure(1, weight=1)
@@ -84,9 +85,9 @@ class HomeScreen(customtkinter.CTkFrame):
         self._btn_frame.configure(fg_color='transparent')
         self._btn_frame.grid(row=6, column=0, pady=10, columnspan=2, sticky=customtkinter.NSEW)
 
-        self._btn_delete = customtkinter.CTkButton(self._btn_frame, text="Borrar", command=self._add_client)
+        self._btn_delete = customtkinter.CTkButton(self._btn_frame, text="Borrar")
         self._btn_delete.grid(row=0, column=0, padx=(0,10), sticky=customtkinter.NSEW)
-        self._btn_edit = customtkinter.CTkButton(self._btn_frame, text="Editar", command=self._add_client)
+        self._btn_edit = customtkinter.CTkButton(self._btn_frame, text="Editar")
         self._btn_edit.grid(row=0, column=1, sticky=customtkinter.NSEW)
 
         self._btn_frame.columnconfigure(0, weight=1)
@@ -137,6 +138,38 @@ class HomeScreen(customtkinter.CTkFrame):
         self._create_client_frame.columnconfigure(0, weight=1)
         self._create_client_frame.columnconfigure(1, weight=1)
 
+    def _location_settings_view(self, wind):
+        self._location_settings_frame = customtkinter.CTkFrame(wind)
+        self._location_settings_frame.configure(fg_color='transparent')
+        self._location_settings_frame.pack(side = tk.TOP,
+            fill = tk.BOTH, 
+            expand = True)
+        
+        self._location_entry = customtkinter.CTkEntry(self._location_settings_frame, placeholder_text='Introduce la ubicación', height=40)
+        self._location_entry.grid(row=0, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
+
+        self._btn_location_settings = customtkinter.CTkFrame(self._location_settings_frame)
+        self._btn_location_settings.grid(row=1, column=0, sticky=customtkinter.NSEW)
+
+        self._btn_delete = customtkinter.CTkButton(self._btn_location_settings, text='Borrar', width=60, state='disabled')
+        self._btn_delete.grid(row=0, column=0, sticky=customtkinter.NSEW)
+        self._btn_edit = customtkinter.CTkButton(self._btn_location_settings, text='Editar', width=60, state='disabled')
+        self._btn_edit.grid(row=0, column=1, padx=5, sticky=customtkinter.NSEW)
+        self._btn_save = customtkinter.CTkButton(self._btn_location_settings, text='Guardar', width=60)
+        self._btn_save.grid(row=0, column=2, sticky=customtkinter.NSEW)
+
+        self._table_location = ttk.Treeview(self._location_settings_frame, columns=('location',), padding=[0])
+        self._table_location.column('#0', width=0, stretch=tk.NO)
+        self._table_location.heading("#0",text="",anchor=tk.CENTER)
+        self._table_location.column('location', anchor=tk.CENTER)
+        self._table_location.heading('location', text='Ubicación')
+        self._table_location.grid(row=2, column=0, sticky=customtkinter.NSEW, pady=10)
+
+
+        self._btn_location_settings.columnconfigure(0, weight=1)
+        self._btn_location_settings.columnconfigure(1, weight=1)
+        self._btn_location_settings.columnconfigure(2, weight=1)
+        self._location_settings_frame.columnconfigure(0, weight=1)
 
     def _add_client(self):
         print(self.name_entry.get())
