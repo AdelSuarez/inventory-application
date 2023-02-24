@@ -7,7 +7,7 @@ class DataBase:
     def _connect_db(self, query, parameters = ()):
         with sql.connect(self._db) as conn:
             self._cur = conn.cursor()
-            result = self.cur.execute(query, parameters)
+            result = self._cur.execute(query, parameters)
             conn.commit()
         return result
 
