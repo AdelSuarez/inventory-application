@@ -1,6 +1,9 @@
 import customtkinter
 import tkinter as tk
 from tkinter import ttk
+from database.DataBase import DataBase as db
+import settings.settings as setting
+from src.FunctLocation import FunctLocation as fl
 
 class HomeScreen(customtkinter.CTkFrame):
     def __init__(self, *args, **kwargs):
@@ -85,10 +88,10 @@ class HomeScreen(customtkinter.CTkFrame):
         self._btn_frame.configure(fg_color='transparent')
         self._btn_frame.grid(row=6, column=0, pady=10, columnspan=2, sticky=customtkinter.NSEW)
 
-        self._btn_delete = customtkinter.CTkButton(self._btn_frame, text="Borrar")
-        self._btn_delete.grid(row=0, column=0, padx=(0,10), sticky=customtkinter.NSEW)
-        self._btn_edit = customtkinter.CTkButton(self._btn_frame, text="Editar")
-        self._btn_edit.grid(row=0, column=1, sticky=customtkinter.NSEW)
+        self._btn_delete_location = customtkinter.CTkButton(self._btn_frame, text="Borrar")
+        self._btn_delete_location.grid(row=0, column=0, padx=(0,10), sticky=customtkinter.NSEW)
+        self._btn_edit_location = customtkinter.CTkButton(self._btn_frame, text="Editar")
+        self._btn_edit_location.grid(row=0, column=1, sticky=customtkinter.NSEW)
 
         self._btn_frame.columnconfigure(0, weight=1)
         self._btn_frame.columnconfigure(1, weight=1)
@@ -123,7 +126,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._location.grid(row=4, column=1,pady=10, sticky=customtkinter.W)
         self._location.set("vacio")
 
-        self._btn_add_location = customtkinter.CTkButton(self._create_client_frame, text="Agregar ubicación", command=self._add_location)
+        self._btn_add_location = customtkinter.CTkButton(self._create_client_frame, text="Agregar ubicación")
         self._btn_add_location.grid(row=4, column=0,pady=10, padx=(0,10), sticky=customtkinter.E)
 
         self._megas_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Megas", height=40)
@@ -139,6 +142,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._create_client_frame.columnconfigure(1, weight=1)
 
     def _location_settings_view(self, wind):
+
         self._location_settings_frame = customtkinter.CTkFrame(wind)
         self._location_settings_frame.configure(fg_color='transparent')
         self._location_settings_frame.pack(side = tk.TOP,
@@ -149,34 +153,49 @@ class HomeScreen(customtkinter.CTkFrame):
         self._location_entry.grid(row=0, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
 
         self._btn_location_settings = customtkinter.CTkFrame(self._location_settings_frame)
-        self._btn_location_settings.grid(row=1, column=0, sticky=customtkinter.NSEW)
+        self._btn_location_settings.configure(fg_color='transparent')
 
-        self._btn_delete = customtkinter.CTkButton(self._btn_location_settings, text='Borrar', width=60, state='disabled')
-        self._btn_delete.grid(row=0, column=0, sticky=customtkinter.NSEW)
-        self._btn_edit = customtkinter.CTkButton(self._btn_location_settings, text='Editar', width=60, state='disabled')
-        self._btn_edit.grid(row=0, column=1, padx=5, sticky=customtkinter.NSEW)
-        self._btn_save = customtkinter.CTkButton(self._btn_location_settings, text='Guardar', width=60)
-        self._btn_save.grid(row=0, column=2, sticky=customtkinter.NSEW)
+        self._btn_location_settings.grid(row=1, column=0, columnspan=2, sticky=customtkinter.NSEW)
+
+        self._btn_delete_location = customtkinter.CTkButton(self._btn_location_settings, text='Borrar', width=60, command=lambda:fl_parameters._delete_location(), fg_color=setting.WARNING)
+        self._btn_delete_location.grid(row=0, column=0, sticky=customtkinter.NSEW)
+        self._btn_edit_location = customtkinter.CTkButton(self._btn_location_settings, text='Editar', width=60, fg_color=setting.EDIT_COLOR, command=lambda:fl_parameters._edit_location())
+        self._btn_edit_location.grid(row=0, column=1, padx=5, sticky=customtkinter.NSEW)
+        self._btn_save_location = customtkinter.CTkButton(self._btn_location_settings, text='Guardar', width=60, command=lambda:fl_parameters._save_location())
+        self._btn_save_location.grid(row=0, column=2, sticky=customtkinter.NSEW)
+
 
         self._table_location = ttk.Treeview(self._location_settings_frame, columns=('location',), padding=[0])
-        self._table_location.column('#0', width=0, stretch=tk.NO)
-        self._table_location.heading("#0",text="",anchor=tk.CENTER)
-        self._table_location.column('location', anchor=tk.CENTER)
-        self._table_location.heading('location', text='Ubicación')
-        self._table_location.grid(row=2, column=0, sticky=customtkinter.NSEW, pady=10)
+        self._table_location.column('#0')
+        self._table_location.heading('#0', text='Ubicación', anchor=tk.CENTER)
+        self._table_location.column('#1', width=0, stretch=tk.NO)
+        self._table_location.heading("#1",text="",anchor=tk.CENTER)
 
+        self.xscroll = customtkinter.CTkScrollbar(self._location_settings_frame,command=self._table_location.xview)
+        self.yscroll = customtkinter.CTkScrollbar(self._location_settings_frame, command=self._table_location.yview)
+        self.xscroll.grid(row=2, column=1, sticky='ew')
+        self.yscroll.grid(column=1, row=2, sticky='ns')
+
+        self._table_location.configure(yscrollcommand=self.yscroll.set,
+                               xscrollcommand=self.xscroll.set)
+        self._table_location.grid(row=2, column=0, sticky=customtkinter.NSEW, pady=5)
+        # self._table_location.bind('<<TreeviewSelect>>', self._select_location)
+
+        self._message = customtkinter.CTkLabel(self._location_settings_frame, text='')
+        self._message.grid(row=3, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
         self._btn_location_settings.columnconfigure(0, weight=1)
         self._btn_location_settings.columnconfigure(1, weight=1)
         self._btn_location_settings.columnconfigure(2, weight=1)
         self._location_settings_frame.columnconfigure(0, weight=1)
 
+        fl_parameters = fl(self._location_entry, self._table_location, self._message)
+
+        fl_parameters._get_locations()
+
     def _add_client(self):
         print(self.name_entry.get())
 
-    def _add_location(self):
-        dialog = customtkinter.CTkInputDialog(text="Ingrese la nueva ubicación:", title="Nueva Ubicación")
-        print("Number:", dialog.get_input())
 
 
 # Nombre, ubicacion, IP, MG, Estado
