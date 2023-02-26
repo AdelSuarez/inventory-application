@@ -4,11 +4,11 @@ from database.DataBase import DataBase
 query_client = '''CREATE TABLE IF NOT EXISTS clients (
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
         NAME TEXT NOT NULL,
-        DNI INTEGER NOT NULL UNIQUE,
+        DNI INTEGER NOT NULL,
         TLF INTEGER,
         LOCATION TEXT NOT NULL,
         MG INTEGER NOT NULL,
-        IP INTEGER NOT NULL UNIQUE,
+        IP INTEGER NOT NULL ,
         PAY TEXT
 )'''
 
