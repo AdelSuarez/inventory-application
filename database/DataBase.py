@@ -13,4 +13,14 @@ class DataBase:
 
     def _fetchall(self):
         return self._connect_db().fetchall()
+    
+    def _locations_optionmenu(self, list):
+        list = []
+        query = 'SELECT * FROM location ORDER BY LOCATION'
+        locations = self._connect_db(query).fetchall()
+        for i in locations:
+            list.append(i[1])
+        return list
+        
+        
         
