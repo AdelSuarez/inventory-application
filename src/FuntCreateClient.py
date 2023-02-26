@@ -1,0 +1,76 @@
+import customtkinter
+from database.DataBase import DataBase as db
+import settings.settings as setting
+
+
+class FunctCreateClient:
+    def __init__(self, name_entry, dni_entry, tlf_entry, location, megas_entry, ip_entry, radio_var, message, table):
+        self._name_entry = name_entry
+        self._dni_entry = dni_entry
+        self._tlf_entry = tlf_entry
+        self._location = location
+        self._megas_entry = megas_entry
+        self._ip_entry = ip_entry
+        self._radio_var = radio_var
+        self._message_client = message
+        self.table = table 
+        
+    
+    def _create_client(self):
+        self._delete_point()
+        if len(self._name_entry.get()) != 0 and len(self._dni_entry.get()) != 0 and len(self._tlf_entry.get()) != 0 and len(self._megas_entry.get()) != 0:
+            
+            if self._validate_empty_int(self._dni_entry.get()) and self._validate_empty_int(self._tlf_entry.get() and self._validate_empty_int(self._megas_entry.get()) and self._validate_empty_int(self._delete_point())):
+
+                parameters = (self._name_entry.get(), self._dni_entry.get(), self._tlf_entry.get(), self._location.get(), self._megas_entry.get(), self._ip_entry.get(), self._radio_var.get())
+                query = 'INSERT INTO clients VALUES(NULL,?,?,?,?,?,?,?)'
+                db()._connect_db(query, parameters)
+                self.table()
+                self._name_entry.delete(0, customtkinter.END)
+                self._dni_entry.delete(0, customtkinter.END)
+                self._tlf_entry.delete(0, customtkinter.END)
+                self._megas_entry.delete(0, customtkinter.END)
+                self._ip_entry.delete(0, customtkinter.END)
+                self._location.set("Ubicación")
+                self._message_client.configure(text='Cliente registrado con exito', fg_color=setting.APPROVED, corner_radius=60)
+
+            else:
+                self._message_client.configure(text='Introduce solo numeros', fg_color=setting.WARNING, corner_radius=60)
+
+        else:
+            self._message_client.configure(text='No dejar campos vacios', fg_color=setting.WARNING, corner_radius=60)
+
+    
+    def _validate_empty_int(self, number):
+        # Verify that the phone entered is numbers
+        value = None
+        try:
+            if int(number): 
+                value = True
+        except:
+            value = False
+
+        return value
+    
+    def _delete_point(self):
+        try:
+            ip  = ''
+            for i in self._ip_entry.get():
+                if i != '.':
+                    ip += i
+            return int(ip)
+        except Exception:
+            self._message_client.configure(text='Introduce solo numeros', fg_color=setting.WARNING, corner_radius=60)
+
+
+    # def _get_clients(self):
+    #     clients_table = self.table.get_children()
+    #     for client in clients_table:
+    #         self.table.delete(client)
+
+    #     query = 'SELECT * FROM clients ORDER BY NAME DESC'
+    #     clients = db()._connect_db(query)
+    #     for client in clients:
+    #         self.table.insert('', 0, text=client[1] , values=[client[1], client[4],client[6], client[5], client[7]], tags=(client[7],))
+
+    
