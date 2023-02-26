@@ -6,6 +6,7 @@ from tkinter import ttk
 from database.DataBase import DataBase as db
 import settings.settings as setting
 from src.FunctLocation import FunctLocation as fl
+from src.FuntCreateClient import FunctCreateClient as fc
 
 class HomeScreen(customtkinter.CTkFrame):
     def __init__(self, *args, **kwargs):
@@ -15,6 +16,11 @@ class HomeScreen(customtkinter.CTkFrame):
         self._configure_win()
         self._controller_frame()
         self._table()
+
+        style = ttk.Style()
+        style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=('Oswald', 12)) # Modify the font of the body
+        style.configure("mystyle.Treeview.Heading", font=('Oswald', 12,'bold')) # Modify the font of the headings
+        style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
     def _controller_frame(self):
         self._controller = customtkinter.CTkFrame(master=self, corner_radius=0)
@@ -105,7 +111,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._view_client_frame.columnconfigure(1, weight=1)
 
     def _create_client(self, wind):
-        self._logo_img_reset = customtkinter.CTkImage(Image.open(os.path.join("img/", "reset.png")), size=(26, 26))
+        self._logo_img_reset = customtkinter.CTkImage(Image.open(os.path.join("img/", "reset.png")), size=(25, 25))
         self._create_client_frame = customtkinter.CTkFrame(wind)
         self._create_client_frame.configure(fg_color='transparent')
         self._create_client_frame.pack(side = tk.TOP,
@@ -117,14 +123,18 @@ class HomeScreen(customtkinter.CTkFrame):
 
         self._name_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Nombre del cliente", height=40)
         self._name_entry.grid(row=2, column=0,columnspan=2, sticky=customtkinter.NSEW)
+        self._name_entry.bind('<Button-1>', self._hide_message_client_frame)
 
         self._dni_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="DNI", height=40)
         self._dni_entry.grid(row=3, column=0, pady=(10,0), padx=(0, 10), sticky=customtkinter.NSEW)
+        self._dni_entry.bind('<Button-1>', self._hide_message_client_frame)
+
 
         self._tlf_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Número telefonico", height=40)
         self._tlf_entry.grid(row=3, column=1, pady=(10,0), sticky=customtkinter.NSEW)
+        self._tlf_entry.bind('<Button-1>', self._hide_message_client_frame)
+
         self.list = db()._locations_optionmenu(self.list)
-        
         self._location_frame = customtkinter.CTkFrame(self._create_client_frame, fg_color='transparent')
         self._location_frame.grid(row=4, column=0, columnspan=2,pady=10, sticky=customtkinter.NSEW)
         self._location = customtkinter.CTkOptionMenu(self._location_frame, 
@@ -138,18 +148,36 @@ class HomeScreen(customtkinter.CTkFrame):
 
         self._megas_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Megas", height=40)
         self._megas_entry.grid(row=5, column=0, padx=(0, 10), sticky=customtkinter.NSEW)
+        self._megas_entry.bind('<Button-1>', self._hide_message_client_frame)
+
 
         self._ip_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="IP", height=40)
         self._ip_entry.grid(row=5, column=1, sticky=customtkinter.NSEW)
+        self._ip_entry.bind('<Button-1>', self._hide_message_client_frame)
 
-        self._btn_add_location = customtkinter.CTkButton(self._create_client_frame, text="Crear cliente")
-        self._btn_add_location.grid(row=6, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
+        self._pay = customtkinter.CTkLabel(self._create_client_frame, text="Pago de mes:", font=customtkinter.CTkFont( weight="bold"))
+        self._pay.grid(row=6, column=0, padx=10, sticky=customtkinter.W)
+
+        self._radio_var = tk.StringVar()
+        self._radiobutton_pay = customtkinter.CTkRadioButton(self._create_client_frame, text="Pago",
+                                            variable= self._radio_var, value='Pago')
+        self._radiobutton_earring = customtkinter.CTkRadioButton(self._create_client_frame, text="Pendiente",
+                                            variable= self._radio_var, value='Pendiente')
+        self._radiobutton_pay.grid(row=7, column=0)
+        self._radiobutton_earring.grid(row=7, column=1)
+
+
+        self._btn_add_location = customtkinter.CTkButton(self._create_client_frame, text="Crear cliente", command=lambda: fc_parameters._create_client())
+        self._btn_add_location.grid(row=8, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
+
+        self._message_client = customtkinter.CTkLabel(self._create_client_frame, text='')
+        self._message_client.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
         self._location_frame.columnconfigure(0, weight=1)
         self._create_client_frame.columnconfigure(0, weight=1)
         self._create_client_frame.columnconfigure(1, weight=1)
 
-    
+        fc_parameters = fc(self._name_entry, self._dni_entry, self._tlf_entry, self._location, self._megas_entry, self._ip_entry, self._radio_var, self._message_client, self._get_clients) # instance of the class that contains the functions
 
     def _location_settings_view(self, wind):
 
@@ -161,6 +189,8 @@ class HomeScreen(customtkinter.CTkFrame):
         
         self._location_entry = customtkinter.CTkEntry(self._location_settings_frame, placeholder_text='Introduce la ubicación', height=40)
         self._location_entry.grid(row=0, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
+        self._location_entry.bind('<Button-1>', self._hide_message_location_frame)
+
 
         self._btn_location_settings = customtkinter.CTkFrame(self._location_settings_frame)
         self._btn_location_settings.configure(fg_color='transparent')
@@ -174,8 +204,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._btn_save_location = customtkinter.CTkButton(self._btn_location_settings, text='Guardar', width=60, command=lambda:fl_parameters._save_location())
         self._btn_save_location.grid(row=0, column=2, sticky=customtkinter.NSEW)
 
-
-        self._table_location = ttk.Treeview(self._location_settings_frame, columns=('location',), padding=[0])
+        self._table_location = ttk.Treeview(self._location_settings_frame, columns=('location',), padding=[0], style="mystyle.Treeview")
         self._table_location.column('#0')
         self._table_location.heading('#0', text='Ubicación', anchor=tk.CENTER)
         self._table_location.column('#1', width=0, stretch=tk.NO)
@@ -190,34 +219,59 @@ class HomeScreen(customtkinter.CTkFrame):
                                xscrollcommand=self.xscroll.set)
         self._table_location.grid(row=2, column=0, sticky=customtkinter.NSEW, pady=5)
 
-        self._message = customtkinter.CTkLabel(self._location_settings_frame, text='')
-        self._message.grid(row=3, column=0, columnspan=2, sticky=customtkinter.NSEW)
+        self._message_location = customtkinter.CTkLabel(self._location_settings_frame, text='')
+        self._message_location.grid(row=3, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
         self._btn_location_settings.columnconfigure(0, weight=1)
         self._btn_location_settings.columnconfigure(1, weight=1)
         self._btn_location_settings.columnconfigure(2, weight=1)
         self._location_settings_frame.columnconfigure(0, weight=1)
 
-        fl_parameters = fl(self._location_entry, self._table_location, self._message)
+        fl_parameters = fl(self._location_entry, self._table_location, self._message_location)
         fl_parameters._get_locations()
 
 # Nombre, ubicacion, IP, MG, Estado
     def _table(self):
-        self.table = ttk.Treeview(self, columns=('name', 'location', 'IP', 'MG', 'state'), padding=[0,0,0,0,0])
+
+        self.table = ttk.Treeview(self, columns=('name', 'location', 'IP', 'MG', 'state'), padding=[0,0,0,0,0], style="mystyle.Treeview")
         self.table.column('#0', width=0, stretch=tk.NO)
         self.table.heading("#0",text="",anchor=tk.CENTER)
-        self.table.column('name', width=350, anchor=tk.CENTER, stretch=0)
+        self.table.column('name', width=350, stretch=0)
         self.table.heading('name', text='Nombre')
-        self.table.column('location',  width=350, anchor=tk.CENTER, stretch=0)
+        self.table.column('location',  width=350, stretch=0)
         self.table.heading('location', text='Ubicacion')
-        self.table.column('IP', width=110, anchor=tk.CENTER, stretch=0)
+        self.table.column('IP', width=150, stretch=0)
         self.table.heading('IP', text='IP')
         self.table.column('MG', width=50, anchor=tk.CENTER, stretch=0)
         self.table.heading('MG', text='MG')
         self.table.column('state', width=70, anchor=tk.CENTER)
         self.table.heading('state', text='Estado')
+        self.table.tag_configure('Pago', background=setting.CLIENT_PAY)
+        self.table.tag_configure('Pendiente', background=setting.CLIENT_EARRING)
         self.table.grid(row=0, column=1, sticky=tk.NSEW, pady=10, padx=10)
+        self._get_clients()
+    
+    def _reset_location(self):
+        self.list = db()._locations_optionmenu(self.list)
+        self._location.configure(values=self.list)
+        print(self.list)
 
+    def _hide_message_client_frame(self, e):
+        self._message_client.configure(text='', fg_color='transparent')
+
+    def _hide_message_location_frame(self, e):
+        self._message_location.configure(text='', fg_color='transparent')
+
+    def _get_clients(self):
+
+        clients_table = self.table.get_children()
+        for client in clients_table:
+            self.table.delete(client)
+
+        query = 'SELECT * FROM clients ORDER BY NAME DESC'
+        clients = db()._connect_db(query)
+        for client in clients:
+            self.table.insert('', 0, text=client[1] , values=[client[1], client[4],client[6], client[5], client[7]], tags=(client[7],))
 
     def _configure_win(self):
         self.grid(row=1, column=0, sticky=customtkinter.NSEW)
@@ -225,8 +279,3 @@ class HomeScreen(customtkinter.CTkFrame):
         self.columnconfigure(1, minsize=900)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
-    
-    def _reset_location(self):
-        self.list = db()._locations_optionmenu(self.list)
-        self._location.configure(values=self.list)
-        print(self.list)
