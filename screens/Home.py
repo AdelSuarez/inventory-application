@@ -1,4 +1,6 @@
 import customtkinter
+import os
+from PIL import Image
 import tkinter as tk
 from tkinter import ttk
 from database.DataBase import DataBase as db
@@ -9,6 +11,7 @@ class HomeScreen(customtkinter.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.configure(corner_radius=0)
+        self.list=[]
         self._configure_win()
         self._controller_frame()
         self._table()
@@ -102,6 +105,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._view_client_frame.columnconfigure(1, weight=1)
 
     def _create_client(self, wind):
+        self._logo_img_reset = customtkinter.CTkImage(Image.open(os.path.join("img/", "reset.png")), size=(26, 26))
         self._create_client_frame = customtkinter.CTkFrame(wind)
         self._create_client_frame.configure(fg_color='transparent')
         self._create_client_frame.pack(side = tk.TOP,
@@ -119,15 +123,18 @@ class HomeScreen(customtkinter.CTkFrame):
 
         self._tlf_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Número telefonico", height=40)
         self._tlf_entry.grid(row=3, column=1, pady=(10,0), sticky=customtkinter.NSEW)
+        self.list = db()._locations_optionmenu(self.list)
+        
+        self._location_frame = customtkinter.CTkFrame(self._create_client_frame, fg_color='transparent')
+        self._location_frame.grid(row=4, column=0, columnspan=2,pady=10, sticky=customtkinter.NSEW)
+        self._location = customtkinter.CTkOptionMenu(self._location_frame, 
+                                                    values=self.list,
+                                                    width=200)
+        self._location.grid(row=0, column=0, sticky=customtkinter.NSEW)
+        self._location.set("Ubicación")
+        self._location_reset = customtkinter.CTkButton(self._location_frame, text='', image=self._logo_img_reset, width=40, command=self._reset_location)
+        self._location_reset.grid(row=0, column=1, padx=(5,0))
 
-        self._location = customtkinter.CTkOptionMenu(self._create_client_frame, 
-                                                values=["vacio"],
-                                                width=200)
-        self._location.grid(row=4, column=1,pady=10, sticky=customtkinter.W)
-        self._location.set("vacio")
-
-        self._btn_add_location = customtkinter.CTkButton(self._create_client_frame, text="Agregar ubicación")
-        self._btn_add_location.grid(row=4, column=0,pady=10, padx=(0,10), sticky=customtkinter.E)
 
         self._megas_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Megas", height=40)
         self._megas_entry.grid(row=5, column=0, padx=(0, 10), sticky=customtkinter.NSEW)
@@ -135,11 +142,14 @@ class HomeScreen(customtkinter.CTkFrame):
         self._ip_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="IP", height=40)
         self._ip_entry.grid(row=5, column=1, sticky=customtkinter.NSEW)
 
-        self._btn_add_location = customtkinter.CTkButton(self._create_client_frame, text="Crear cliente", command=self._add_client)
+        self._btn_add_location = customtkinter.CTkButton(self._create_client_frame, text="Crear cliente")
         self._btn_add_location.grid(row=6, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
 
+        self._location_frame.columnconfigure(0, weight=1)
         self._create_client_frame.columnconfigure(0, weight=1)
         self._create_client_frame.columnconfigure(1, weight=1)
+
+    
 
     def _location_settings_view(self, wind):
 
@@ -179,7 +189,6 @@ class HomeScreen(customtkinter.CTkFrame):
         self._table_location.configure(yscrollcommand=self.yscroll.set,
                                xscrollcommand=self.xscroll.set)
         self._table_location.grid(row=2, column=0, sticky=customtkinter.NSEW, pady=5)
-        # self._table_location.bind('<<TreeviewSelect>>', self._select_location)
 
         self._message = customtkinter.CTkLabel(self._location_settings_frame, text='')
         self._message.grid(row=3, column=0, columnspan=2, sticky=customtkinter.NSEW)
@@ -190,13 +199,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._location_settings_frame.columnconfigure(0, weight=1)
 
         fl_parameters = fl(self._location_entry, self._table_location, self._message)
-
         fl_parameters._get_locations()
-
-    def _add_client(self):
-        print(self.name_entry.get())
-
-
 
 # Nombre, ubicacion, IP, MG, Estado
     def _table(self):
@@ -222,3 +225,8 @@ class HomeScreen(customtkinter.CTkFrame):
         self.columnconfigure(1, minsize=900)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=1)
+    
+    def _reset_location(self):
+        self.list = db()._locations_optionmenu(self.list)
+        self._location.configure(values=self.list)
+        print(self.list)
