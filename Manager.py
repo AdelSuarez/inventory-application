@@ -22,7 +22,7 @@ class Manager(customtkinter.CTk):
         """Main window setting"""
         self.geometry('1200x700')
         self.minsize(width=1200, height=700)
-        self.title('Sistema Inventario')
+        self.title('Control de clientes')
 
 
     def _configure_self(self):

@@ -19,7 +19,7 @@ class NotificationBar(customtkinter.CTkFrame):
 
         self._user = customtkinter.CTkLabel(master=self._bar_frame, text='Developer')
         self._user.grid(row=0, column=0, padx=20, sticky=customtkinter.W)
-        self._version =customtkinter.CTkLabel(master=self._bar_frame, text='v0.1.0.2')
+        self._version =customtkinter.CTkLabel(master=self._bar_frame, text='v0.1.1')
         self._version.grid(row=0, column=1, padx=20, sticky=customtkinter.E)
 
         self._bar_frame.columnconfigure(0, weight=1)

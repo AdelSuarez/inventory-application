@@ -25,3 +25,4 @@ if __name__ == '__main__':
     DataBase()._connect_db(query_location)
     app = Manager()
     app.mainloop()
+    print('finished app')
