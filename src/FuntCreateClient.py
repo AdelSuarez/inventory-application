@@ -19,10 +19,10 @@ class FunctCreateClient:
         
     
     def _create_client(self):
-        self._delete_point()
+        self._delete_point(self._ip_entry)
         if len(self._name_entry.get()) != 0 and len(self._dni_entry.get()) != 0 and len(self._tlf_entry.get()) != 0 and len(self._megas_entry.get()) != 0:
             
-            if self._validate_empty_int(self._dni_entry.get()) and self._validate_empty_int(self._tlf_entry.get() and self._validate_empty_int(self._megas_entry.get()) and self._validate_empty_int(self._delete_point())):
+            if self._validate_empty_int(self._dni_entry.get()) and self._validate_empty_int(self._tlf_entry.get()) and self._validate_empty_int(self._megas_entry.get()) and self._validate_empty_int(self._delete_point(self._ip_entry)):
                 if self._location.get() != 'Ubicación':
                     parameters = (self._name_entry.get(), self._dni_entry.get(), self._tlf_entry.get(), self._location.get(), self._megas_entry.get(), self._ip_entry.get(), self._radio_var.get())
                     query = 'INSERT INTO clients VALUES(NULL,?,?,?,?,?,?,?)'
@@ -38,7 +38,7 @@ class FunctCreateClient:
                     self._location.set("Ubicación")
                     self._message(self._message_client,'Cliente registrado con exito', setting.APPROVED)
                 else:
-                    self._message(self._message_client,'Introduce la ubicaciín', setting.WARNING)
+                    self._message(self._message_client,'Introduce la ubicación', setting.WARNING)
 
             else:
                 self._message(self._message_client,'Introduce solo números', setting.WARNING)
@@ -58,15 +58,16 @@ class FunctCreateClient:
 
         return value
     
-    def _delete_point(self):
+    def _delete_point(self, number):
         try:
             ip  = ''
-            for i in self._ip_entry.get():
+            for i in number.get():
                 if i != '.':
                     ip += i
             return int(ip)
         except Exception:
-            self._message_client.configure(text='Introduce solo numeros', fg_color=setting.WARNING, corner_radius=60)
+            self._message(self._message_client,'Introduce solo números', setting.WARNING)
+
     
     def _message(self, message, text, color):
         message.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
