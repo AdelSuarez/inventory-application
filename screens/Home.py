@@ -125,7 +125,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._btn_save_location.grid(row=0, column=2, sticky=customtkinter.NSEW)
 
         self._message_client_view = customtkinter.CTkLabel(self._view_client_frame, text='')
-        self._message_client_view.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
+        # self._message_client_view.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
         self._name_view_frame.columnconfigure(1, weight=1)
         self._btn_frame.columnconfigure(0, weight=1)
@@ -285,6 +285,8 @@ class HomeScreen(customtkinter.CTkFrame):
     def _client_view_date(self, e):
         self.date_client.clear()
         try:
+            self._message_client_view.grid_forget()
+
             self.date_client.append(self.table.item(self.table.selection())['values'][0])
             self.date_client.append(self.table.item(self.table.selection())['values'][7])
             client_name = self.table.item(self.table.selection())['values'][0]
@@ -317,7 +319,8 @@ class HomeScreen(customtkinter.CTkFrame):
                 self._radiobutton_earring_view.configure(state='normal')
                 self._radiobutton_earring_view.select(1)
         except Exception as e:
-            print(e)
+            self._message_client_view.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
+
 
     def _entry_normal(self):
         self._name_entry_view.configure(state='normal')
