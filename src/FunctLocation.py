@@ -8,13 +8,13 @@ class FunctLocation():
         self._location_entry = location_entry
         self._table_location = table_location
         self._mode = 'save'
-        self._message = message
+        self._message_location = message
 
 
 
     def _save_location(self):
         if len(self._location_entry.get()) == 0:
-            self._message.configure(text='Introduce una Ubicación', fg_color=setting.WARNING, corner_radius=60)
+            self._message(self._message_location, 'Introduce una Ubicación', setting.WARNING)
             self._mode = 'save'
         else:
             if self._mode == 'save':
@@ -23,7 +23,9 @@ class FunctLocation():
                 db()._connect_db(query, parameter)
                 self._location_entry.delete(0, customtkinter.END)
                 self._get_locations()
-                self._message.configure(text='Ubicación creada con exito', fg_color=setting.APPROVED, corner_radius=60)
+                self._message_location.configure(text='Ubicación creada con exito', fg_color=setting.APPROVED, corner_radius=60)
+                self._message(self._message_location, 'Guardado Con exito', setting.APPROVED)
+
             elif self._mode == 'edit':
                 if self._location_entry.get() == self._table_location.item(self._table_location.selection())['text']:
                     return
@@ -32,9 +34,11 @@ class FunctLocation():
                     parameters = (self._location_entry.get(), self._table_location.item(self._table_location.selection())['values'][0])
                     db()._connect_db(query, parameters)
                     self._get_locations()
-                    self._message.configure(text='Ubicación actualizada con exito', fg_color=setting.APPROVED, corner_radius=60)
+                    self._message_location.configure(text='Ubicación actualizada con exito', fg_color=setting.APPROVED, corner_radius=60)
                     self._mode = 'save'
                     self._location_entry.delete(0, customtkinter.END)
+                    self._message(self._message_location, 'Actualizado con exito', setting.APPROVED)
+
 
 
     def _delete_location(self):
@@ -43,18 +47,18 @@ class FunctLocation():
             parameters=(self._table_location.item(self._table_location.selection())['values'][0], )
             db()._connect_db(query, parameters)
             self._get_locations()
-            self._message.configure(text='Ubicación borrada con exito', fg_color=setting.APPROVED, corner_radius=60)
+            self._message(self._message_location, 'Ubicación borrada con exito', setting.APPROVED)
+
         except Exception:
-            self._message.configure(text='Seleccione una ubicacion', fg_color=setting.WARNING, corner_radius=60)
+            self._message(self._message_location, 'Seleccione una ubicación', setting.WARNING)
 
     def _edit_location(self):
         self._location_entry.delete(0, customtkinter.END)
         location = self._table_location.item(self._table_location.selection())['text']
         if location == '':
-            self._message.configure(text='Seleccione una ubicacion', fg_color=setting.WARNING, corner_radius=60)
-            print('nada')
+            self._message(self._message_location, 'Seleccione una ubicación', setting.WARNING)
             return
-        self._message.configure(text='', fg_color='transparent')
+        self._message_location.grid_forget()
         self._location_entry.insert(0, location)
         self._mode = 'edit'
 
@@ -67,3 +71,10 @@ class FunctLocation():
         locations = db()._connect_db(query)
         for location in locations:
             self._table_location.insert('', 0, text=location[1] , values=[location[0]])
+
+
+    def _message(self, message, text, color):
+        message.grid(row=3, column=0, columnspan=2, sticky=customtkinter.NSEW)
+        message.configure(text=text, fg_color=color, corner_radius=60)
+
+    

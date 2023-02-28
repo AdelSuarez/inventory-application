@@ -4,7 +4,7 @@ import settings.settings as setting
 
 
 class FunctCreateClient:
-    def __init__(self, name_entry, dni_entry, tlf_entry, location, megas_entry, ip_entry, radio_var, message, table):
+    def __init__(self, name_entry, dni_entry, tlf_entry, location, megas_entry, ip_entry, radio_var, message, table, radiobtn_pay, radiobtn_earring):
         self._name_entry = name_entry
         self._dni_entry = dni_entry
         self._tlf_entry = tlf_entry
@@ -13,7 +13,9 @@ class FunctCreateClient:
         self._ip_entry = ip_entry
         self._radio_var = radio_var
         self._message_client = message
-        self.table = table 
+        self.table = table
+        self._radiobtn_pay = radiobtn_pay 
+        self._radiobtn_earring = radiobtn_earring
         
     
     def _create_client(self):
@@ -21,24 +23,28 @@ class FunctCreateClient:
         if len(self._name_entry.get()) != 0 and len(self._dni_entry.get()) != 0 and len(self._tlf_entry.get()) != 0 and len(self._megas_entry.get()) != 0:
             
             if self._validate_empty_int(self._dni_entry.get()) and self._validate_empty_int(self._tlf_entry.get() and self._validate_empty_int(self._megas_entry.get()) and self._validate_empty_int(self._delete_point())):
-
-                parameters = (self._name_entry.get(), self._dni_entry.get(), self._tlf_entry.get(), self._location.get(), self._megas_entry.get(), self._ip_entry.get(), self._radio_var.get())
-                query = 'INSERT INTO clients VALUES(NULL,?,?,?,?,?,?,?)'
-                db()._connect_db(query, parameters)
-                self.table()
-                self._name_entry.delete(0, customtkinter.END)
-                self._dni_entry.delete(0, customtkinter.END)
-                self._tlf_entry.delete(0, customtkinter.END)
-                self._megas_entry.delete(0, customtkinter.END)
-                self._ip_entry.delete(0, customtkinter.END)
-                self._location.set("Ubicación")
-                self._message_client.configure(text='Cliente registrado con exito', fg_color=setting.APPROVED, corner_radius=60)
+                if self._location.get() != 'Ubicación':
+                    parameters = (self._name_entry.get(), self._dni_entry.get(), self._tlf_entry.get(), self._location.get(), self._megas_entry.get(), self._ip_entry.get(), self._radio_var.get())
+                    query = 'INSERT INTO clients VALUES(NULL,?,?,?,?,?,?,?)'
+                    db()._connect_db(query, parameters)
+                    self.table()
+                    self._name_entry.delete(0, customtkinter.END)
+                    self._dni_entry.delete(0, customtkinter.END)
+                    self._tlf_entry.delete(0, customtkinter.END)
+                    self._megas_entry.delete(0, customtkinter.END)
+                    self._ip_entry.delete(0, customtkinter.END)
+                    self._radiobtn_pay.deselect(0)
+                    self._radiobtn_earring.deselect(0)
+                    self._location.set("Ubicación")
+                    self._message(self._message_client,'Cliente registrado con exito', setting.APPROVED)
+                else:
+                    self._message(self._message_client,'Introduce la ubicaciín', setting.WARNING)
 
             else:
-                self._message_client.configure(text='Introduce solo numeros', fg_color=setting.WARNING, corner_radius=60)
+                self._message(self._message_client,'Introduce solo números', setting.WARNING)
 
         else:
-            self._message_client.configure(text='No dejar campos vacios', fg_color=setting.WARNING, corner_radius=60)
+            self._message(self._message_client, 'No dejar Campos vacios', setting.WARNING)
 
     
     def _validate_empty_int(self, number):
@@ -61,16 +67,7 @@ class FunctCreateClient:
             return int(ip)
         except Exception:
             self._message_client.configure(text='Introduce solo numeros', fg_color=setting.WARNING, corner_radius=60)
-
-
-    # def _get_clients(self):
-    #     clients_table = self.table.get_children()
-    #     for client in clients_table:
-    #         self.table.delete(client)
-
-    #     query = 'SELECT * FROM clients ORDER BY NAME DESC'
-    #     clients = db()._connect_db(query)
-    #     for client in clients:
-    #         self.table.insert('', 0, text=client[1] , values=[client[1], client[4],client[6], client[5], client[7]], tags=(client[7],))
-
     
+    def _message(self, message, text, color):
+        message.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
+        message.configure(text=text, fg_color=color, corner_radius=60)
