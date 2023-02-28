@@ -1,3 +1,4 @@
+import customtkinter
 from database.DataBase import DataBase as db
 import customtkinter
 import settings.settings as setting
@@ -47,6 +48,7 @@ class FunctLocation():
             parameters=(self._table_location.item(self._table_location.selection())['values'][0], )
             db()._connect_db(query, parameters)
             self._get_locations()
+            self._location_entry.delete(0, customtkinter.END)
             self._message(self._message_location, 'Ubicación borrada con exito', setting.APPROVED)
 
         except Exception:
