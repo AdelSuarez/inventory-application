@@ -5,9 +5,9 @@ import tkinter as tk
 from tkinter import ttk
 from database.DataBase import DataBase as db
 import settings.settings as setting
-from src.FunctLocation import FunctLocation as fl
-from src.FuntCreateClient import FunctCreateClient as fc
-from src.FunctView import FunctView as fv
+from src.LocationQuery import LocationQuery as fl
+from src.CreateClientQuery import CreateClientQuery as fc
+from src.ViewQuery import ViewQuery as fv
 
 class HomeScreen(customtkinter.CTkFrame):
     def __init__(self, *args, **kwargs):
@@ -32,15 +32,62 @@ class HomeScreen(customtkinter.CTkFrame):
         self.tabview.grid(row=0, column=0, padx=10, columnspan=2, sticky=customtkinter.NSEW)
         self.tabview.add("Datos de cliente")
         self.tabview.add("Crear cliente")
-        self.tabview.add("Configuraciones de Ubicacion")
+        self.tabview.add("Configuraciones de Ubicación")
         self.tabview.tab("Datos de cliente").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
         self.tabview.tab("Crear cliente").grid_columnconfigure(0, weight=1)
-        self.tabview.tab("Configuraciones de Ubicacion").grid_columnconfigure(0, weight=1)
+        self.tabview.tab("Configuraciones de Ubicación").grid_columnconfigure(0, weight=1)
         self._view_client(self.tabview.tab('Datos de cliente'))
         self._create_client(self.tabview.tab('Crear cliente'))
-        self._location_settings_view(self.tabview.tab('Configuraciones de Ubicacion'))
+        self._location_settings_view(self.tabview.tab('Configuraciones de Ubicación'))
 
+        # States Frame
+        self._state_frame = customtkinter.CTkFrame(self._controller)
+        self._state_frame.grid(row=1, column=0, columnspan=2,pady=10,padx=10 , sticky=customtkinter.NSEW)
+    
+        self._state_title = customtkinter.CTkLabel(self._state_frame, text='Estadisticas', fg_color=setting.BACKGROUND, corner_radius=5)
+        self._state_title.grid(row=0, column=0, columnspan=2, pady=5, padx=5 ,sticky=customtkinter.NSEW)
+
+        self._label_state_frame = customtkinter.CTkFrame(self._state_frame, fg_color='transparent')
+        self._label_state_frame.grid(row=1, column=0, columnspan=2, sticky=customtkinter.NSEW)
+
+        self._counter_client_title = customtkinter.CTkLabel(self._label_state_frame, text='Clientes:', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_client_title.grid(row=0, column=0, pady=(5,0), padx=(10, 0), sticky= customtkinter.W)
+        self._counter_client_state = customtkinter.CTkLabel(self._label_state_frame, text='0', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_client_state.grid(row=0, column=1, pady=(5,0), padx=(0, 10), sticky= customtkinter.E )
+
+        self._counter_mg_title = customtkinter.CTkLabel(self._label_state_frame, text='Megas vendidos:', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_mg_title.grid(row=1, column=0, pady=(5,0), padx=(10, 0), sticky= customtkinter.W)
+
+        self._counter_mg_state = customtkinter.CTkLabel(self._label_state_frame, text='0', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_mg_state.grid(row=1, column=1, pady=(5,0), padx=(0, 10), sticky= customtkinter.E )
+        
+        
+        self._mg_state_frame = customtkinter.CTkFrame(self._state_frame, fg_color='transparent')
+        self._mg_state_frame.grid(row=2, column=0, columnspan=2, sticky=customtkinter.NSEW)
+        self._counter_mg_title_pay = customtkinter.CTkLabel(self._mg_state_frame, text='Megas Pagos:', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_mg_title_pay.grid(row=0, column=0, pady=(5,0), padx=(10, 0), sticky= customtkinter.W)
+
+        self._counter_mg_state_pay = customtkinter.CTkLabel(self._mg_state_frame, text='0', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_mg_state_pay.grid(row=0, column=1, pady=(5,0), padx=(0, 10), sticky= customtkinter.E )
+        
+        self._counter_mg_title_earring = customtkinter.CTkLabel(self._mg_state_frame, text='Megas Pendientes:', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_mg_title_earring.grid(row=0, column=2, pady=(5,0), padx=(10, 0), sticky= customtkinter.W)
+
+        self._counter_mg_state_earring = customtkinter.CTkLabel(self._mg_state_frame, text='0', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_mg_state_earring.grid(row=0, column=3, pady=(5,0), padx=(0, 10), sticky= customtkinter.E )
+
+        # Settings Frame
         self._controller.columnconfigure(0, weight=1)
+        self._state_frame.columnconfigure(0, weight=1)
+        self._label_state_frame.columnconfigure(0, weight=1)
+        self._label_state_frame.columnconfigure(1, weight=1)
+        self._mg_state_frame.columnconfigure(0, weight=1)
+        self._mg_state_frame.columnconfigure(3, weight=1)
+
+
+        # self._controller.rowconfigure(0, weight=1)
+        # self._controller.rowconfigure(0, weight=2)
+
         self._controller.columnconfigure(1, weight=1)
 
     def _view_client(self, wind):
@@ -52,7 +99,7 @@ class HomeScreen(customtkinter.CTkFrame):
 
         self._name_view_frame = customtkinter.CTkFrame(self._view_client_frame, fg_color='transparent')
         self._name_view_frame.grid(row=0, column=0, columnspan=2, sticky=customtkinter.NSEW, pady=10)
-        self._name_title = customtkinter.CTkLabel(self._name_view_frame, text='Nombre:', font=customtkinter.CTkFont( weight="bold"))
+        self._name_title = customtkinter.CTkLabel(self._name_view_frame, text='Nombre:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._name_title.grid(row=0, column=0, padx=(0, 10))
 
         self._name_entry_view = customtkinter.CTkEntry(self._name_view_frame, border_width=0, state='disabled', height=40)
@@ -62,13 +109,13 @@ class HomeScreen(customtkinter.CTkFrame):
         self._dni_tlf_frame.configure(fg_color='transparent')
         self._dni_tlf_frame.grid(row=1, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
-        self._dni_title = customtkinter.CTkLabel(self._dni_tlf_frame, text='DNI:', font=customtkinter.CTkFont( weight="bold"))
+        self._dni_title = customtkinter.CTkLabel(self._dni_tlf_frame, text='DNI:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._dni_title.grid(row=0, column=0, padx=(0,10))
 
         self._dni_entry_view = customtkinter.CTkEntry(self._dni_tlf_frame, border_width=0, state='disabled', height=40)
         self._dni_entry_view.grid(row=0, column=1, padx=(0,5), sticky=customtkinter.NSEW)
 
-        self._tlf_title = customtkinter.CTkLabel(self._dni_tlf_frame, text='TLF:', font=customtkinter.CTkFont( weight="bold"))
+        self._tlf_title = customtkinter.CTkLabel(self._dni_tlf_frame, text='TLF:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._tlf_title.grid(row=0, column=2, padx=(0,10))
 
         self._tlf_entry_view = customtkinter.CTkEntry(self._dni_tlf_frame, border_width=0, state='disabled', height=40)
@@ -90,19 +137,19 @@ class HomeScreen(customtkinter.CTkFrame):
         self._mg_ip_frame.configure(fg_color='transparent')
         self._mg_ip_frame.grid(row=5, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
-        self._mg_title = customtkinter.CTkLabel(self._mg_ip_frame, text='MG:', font=customtkinter.CTkFont( weight="bold"))
+        self._mg_title = customtkinter.CTkLabel(self._mg_ip_frame, text='MG:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._mg_title.grid(row=0, column=0, padx=(0,10))
 
         self._mg_entry_view = customtkinter.CTkEntry(self._mg_ip_frame, border_width=0, state='disabled', height=40)
         self._mg_entry_view.grid(row=0, column=1, padx=(0,5), sticky=customtkinter.NSEW)
 
-        self._ip_title = customtkinter.CTkLabel(self._mg_ip_frame, text='IP:', font=customtkinter.CTkFont( weight="bold"))
+        self._ip_title = customtkinter.CTkLabel(self._mg_ip_frame, text='IP:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._ip_title.grid(row=0, column=2, padx=(0,10))
 
         self._ip_entry_view = customtkinter.CTkEntry(self._mg_ip_frame, border_width=0, state='disabled', height=40)
         self._ip_entry_view.grid(row=0, column=3, sticky=customtkinter.NSEW)
 
-        self._pay_state = customtkinter.CTkLabel(self._view_client_frame, text="Estado del Mes:", font=customtkinter.CTkFont( weight="bold"))
+        self._pay_state = customtkinter.CTkLabel(self._view_client_frame, text="Estado del Mes:", font=customtkinter.CTkFont( weight=setting.FONT))
         self._pay_state.grid(row=6, column=0, padx=10, sticky=customtkinter.W)
 
         self._radio_var_view = tk.StringVar()
@@ -148,7 +195,7 @@ class HomeScreen(customtkinter.CTkFrame):
             fill = tk.BOTH, 
             expand = True)
 
-        self._date = customtkinter.CTkLabel(self._create_client_frame, text="Datos:", font=customtkinter.CTkFont( weight="bold"))
+        self._date = customtkinter.CTkLabel(self._create_client_frame, text="Datos:", font=customtkinter.CTkFont( weight=setting.FONT))
         self._date.grid(row=1, column=0, padx=10, sticky=customtkinter.W)
 
         self._name_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Nombre del cliente", height=40)
@@ -185,7 +232,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._ip_entry_create.grid(row=5, column=1, sticky=customtkinter.NSEW)
         self._ip_entry_create.bind('<Button-1>', self._hide_message_client_frame)
 
-        self._pay_create = customtkinter.CTkLabel(self._create_client_frame, text="Pago de mes:", font=customtkinter.CTkFont( weight="bold"))
+        self._pay_create = customtkinter.CTkLabel(self._create_client_frame, text="Pago de mes:", font=customtkinter.CTkFont( weight=setting.FONT))
         self._pay_create.grid(row=6, column=0, padx=10, sticky=customtkinter.W)
 
         self._radio_var = tk.StringVar()
@@ -248,6 +295,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._table_location.configure(yscrollcommand=self.yscroll.set,
                                xscrollcommand=self.xscroll.set)
         self._table_location.grid(row=2, column=0, sticky=customtkinter.NSEW, pady=5)
+        # self._table_location.bind('<<TreeviewSelect>>', self._hide_message_location_frame)
 
         self._message_location = customtkinter.CTkLabel(self._location_settings_frame, text='')
         # self._message_location.grid(row=3, column=0, columnspan=2, sticky=customtkinter.NSEW)
@@ -352,12 +400,11 @@ class HomeScreen(customtkinter.CTkFrame):
         optionMenu.configure(values=self.list)
 
     def _hide_message_client_frame(self, e):
-        # self._message_client_create.configure(text='', fg_color='transparent')
         self._message_client_create.grid_forget()
 
     def _hide_message_location_frame(self, e):
-        self._message_location.configure(text='', fg_color='transparent')
         self._message_location.grid_forget()
+
 
     def _get_clients(self):
 
