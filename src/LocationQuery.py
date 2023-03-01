@@ -4,7 +4,7 @@ import customtkinter
 import settings.settings as setting
 
 
-class FunctLocation():
+class LocationQuery:
     def __init__(self, location_entry, table_location, message):
         self._location_entry = location_entry
         self._table_location = table_location
@@ -51,7 +51,7 @@ class FunctLocation():
             self._location_entry.delete(0, customtkinter.END)
             self._message(self._message_location, 'Ubicación borrada con exito', setting.APPROVED)
 
-        except Exception:
+        except Exception as e:
             self._message(self._message_location, 'Seleccione una ubicación', setting.WARNING)
 
     def _edit_location(self):
