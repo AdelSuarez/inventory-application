@@ -52,7 +52,7 @@ class HomeScreen(customtkinter.CTkFrame):
 
         self._counter_client_title = customtkinter.CTkLabel(self._label_state_frame, text='Clientes:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._counter_client_title.grid(row=0, column=0, pady=(5,0), padx=(10, 0), sticky= customtkinter.W)
-        self._counter_client_state = customtkinter.CTkLabel(self._label_state_frame, text='0', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._counter_client_state = customtkinter.CTkLabel(self._label_state_frame, text='0' ,font=customtkinter.CTkFont( weight=setting.FONT))
         self._counter_client_state.grid(row=0, column=1, pady=(5,0), padx=(0, 10), sticky= customtkinter.E )
 
         self._counter_mg_title = customtkinter.CTkLabel(self._label_state_frame, text='Megas vendidos:', font=customtkinter.CTkFont( weight=setting.FONT))
@@ -89,6 +89,32 @@ class HomeScreen(customtkinter.CTkFrame):
         # self._controller.rowconfigure(0, weight=2)
 
         self._controller.columnconfigure(1, weight=1)
+        self._counter()
+
+
+    def _counter(self):
+        counter_client = 0
+        counter_mg = 0
+        counter_mg_pay = 0
+        counter_mg_earring = 0
+
+
+        query = 'SELECT * FROM clients'
+        clients = db()._connect_db(query)
+        for i in clients:
+            counter_client += 1
+            counter_mg += i[5]
+            if i[7] == 'Pago':
+                counter_mg_pay += i[5]
+            elif i[7] == 'Pendiente':
+                counter_mg_earring += i[5]
+
+
+        self._counter_client_state.configure(text=str(counter_client))
+        self._counter_mg_state.configure(text=str(counter_mg))
+        self._counter_mg_state_pay.configure(text=str(counter_mg_pay))
+        self._counter_mg_state_earring.configure(text=str(counter_mg_earring))
+
 
     def _view_client(self, wind):
         self._view_client_frame = customtkinter.CTkFrame(wind)
@@ -186,7 +212,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._dni_tlf_frame.columnconfigure(3, weight=2)
         self._view_client_frame.columnconfigure(1, weight=1)
 
-        fv_parameters = fv(self._name_entry_view, self._dni_entry_view, self._tlf_entry_view, self._location_view, self._mg_entry_view, self._ip_entry_view, self._radio_var_view, self.date_client, self._get_clients, self._message_client_view, self._entry_normal, self._entry_clear, self._entry_disabled, self._radiobutton_pay_view, self._radiobutton_earring_view)
+        fv_parameters = fv(self._name_entry_view, self._dni_entry_view, self._tlf_entry_view, self._location_view, self._mg_entry_view, self._ip_entry_view, self._radio_var_view, self.date_client, self._get_clients, self._message_client_view, self._entry_normal, self._entry_clear, self._entry_disabled, self._radiobutton_pay_view, self._radiobutton_earring_view, self._counter)
 
     def _create_client(self, wind):
         self._create_client_frame = customtkinter.CTkFrame(wind)
@@ -254,7 +280,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._create_client_frame.columnconfigure(0, weight=1)
         self._create_client_frame.columnconfigure(1, weight=1)
 
-        fc_parameters = fc(self._name_entry, self._dni_entry_create, self._tlf_entry_create, self._location, self._megas_entry_create, self._ip_entry_create, self._radio_var, self._message_client_create, self._get_clients, self._radiobutton_pay, self._radiobutton_earring) # instance of the class that contains the functions
+        fc_parameters = fc(self._name_entry, self._dni_entry_create, self._tlf_entry_create, self._location, self._megas_entry_create, self._ip_entry_create, self._radio_var, self._message_client_create, self._get_clients, self._radiobutton_pay, self._radiobutton_earring, self._counter) # instance of the class that contains the functions
 
     def _location_settings_view(self, wind):
 
@@ -357,15 +383,22 @@ class HomeScreen(customtkinter.CTkFrame):
 
 
             if client_state == 'Pago':
+                # self._radio_var_view = tk.StringVar(value='Pago')
                 self._radiobutton_earring_view.configure(state='disabled')
-                self._radiobutton_earring_view.deselect(0)
+                self._radiobutton_earring_view.deselect()
                 self._radiobutton_pay_view.configure(state='normal')
-                self._radiobutton_pay_view.select(1)
+                self._radiobutton_pay_view.select()
             elif client_state == 'Pendiente':
+                # self._radio_var_view = 'Pendiente'
                 self._radiobutton_pay_view.configure(state='disabled')
-                self._radiobutton_pay_view.deselect(0)
+                self._radiobutton_pay_view.deselect()
                 self._radiobutton_earring_view.configure(state='normal')
-                self._radiobutton_earring_view.select(1)
+                self._radiobutton_earring_view.select()
+            elif client_state == '':
+                self._radiobutton_pay_view.configure(state='disabled')
+                self._radiobutton_pay_view.deselect()
+                self._radiobutton_earring_view.configure(state='disabled')
+                self._radiobutton_earring_view.deselect()
         except Exception as e:
             self._message_client_view.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
@@ -412,7 +445,7 @@ class HomeScreen(customtkinter.CTkFrame):
         for client in clients_table:
             self.table.delete(client)
 
-        query = 'SELECT * FROM clients ORDER BY NAME DESC'
+        query = 'SELECT * FROM clients ORDER BY LOCATION DESC'
         clients = db()._connect_db(query)
         for client in clients:
             self.table.insert('', 0, text=client[0] , values=[client[1], client[4],client[6], client[5], client[7], client[2], client[3], client[0]], tags=(client[7],))
