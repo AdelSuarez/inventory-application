@@ -5,7 +5,7 @@ from src.checkers  import validate_empty_int
 
 
 class ViewQuery:
-    def __init__(self, name_entry, dni_entry, tlf_entry, location, mg_entry, ip_entry, radio_var, date_client, get_clients, message, e_normal, e_clear, e_disabled, radiobtn_pay, radiobtn_earring):
+    def __init__(self, name_entry, dni_entry, tlf_entry, location, mg_entry, ip_entry, radio_var, date_client, get_clients, message, e_normal, e_clear, e_disabled, radiobtn_pay, radiobtn_earring, counter_client):
         self._name_entry_view = name_entry
         self._dni_entry_view = dni_entry
         self._tlf_entry_view = tlf_entry
@@ -22,6 +22,7 @@ class ViewQuery:
         self._radiobutton_pay_view = radiobtn_pay
         self._radiobutton_earring_view = radiobtn_earring
         self._is_edit = False
+        self._counter_client = counter_client
 
 
     def _delete_client(self):
@@ -36,6 +37,7 @@ class ViewQuery:
             self._entry_clear()
             self._entry_disabled()
             self._location_radiobtn_deselect()
+            self._counter_client()
             self._message(self._message_client_view, 'Cliente borrado con exito', setting.APPROVED)
         except Exception:
             self._message(self._message_client_view, 'Seleccione un cliente', setting.WARNING)
@@ -66,6 +68,8 @@ class ViewQuery:
                         self._entry_clear()
                         self._entry_disabled()
                         self._location_radiobtn_deselect()
+                        self._counter_client()
+
                         self._message(self._message_client_view,'Cliente actualizado con exito', setting.APPROVED)
                     else:
                         self._message(self._message_client_view,'Introduce la ubicación', setting.WARNING)
