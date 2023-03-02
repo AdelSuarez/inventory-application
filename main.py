@@ -10,7 +10,8 @@ query_client = '''CREATE TABLE IF NOT EXISTS clients (
         MG INTEGER NOT NULL,
         IP INTEGER NOT NULL ,
         PAY TEXT
-)'''
+        )
+'''
 
 query_location = ''' CREATE TABLE IF NOT EXISTS location (
                 ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,8 +22,11 @@ query_location = ''' CREATE TABLE IF NOT EXISTS location (
 
 if __name__ == '__main__':
     print('Run app')
+    # creation of customer database
     DataBase()._connect_db(query_client)
+    # location database creation
     DataBase()._connect_db(query_location)
+    
     app = Manager()
     app.mainloop()
     print('finished app')
