@@ -5,7 +5,7 @@ from src.checkers  import validate_empty_int
 
 
 class ViewQuery:
-    def __init__(self, name_entry, dni_entry, tlf_entry, location, mg_entry, ip_entry, radio_var, date_client, get_clients, message, e_normal, e_clear, e_disabled, radiobtn_pay, radiobtn_earring, counter_client):
+    def __init__(self, name_entry, dni_entry, tlf_entry, location, mg_entry, ip_entry, radio_var, data_client, get_clients, message, e_normal, e_clear, e_disabled, radiobtn_pay, radiobtn_earring, counter_client):
         self._name_entry_view = name_entry
         self._dni_entry_view = dni_entry
         self._tlf_entry_view = tlf_entry
@@ -13,7 +13,7 @@ class ViewQuery:
         self._mg_entry_view = mg_entry
         self._ip_entry_view = ip_entry
         self._radio_var_view = radio_var
-        self._date_client = date_client
+        self._data_client = data_client
         self._get_clients = get_clients
         self._message_client_view = message
         self._entry_normal = e_normal
@@ -28,7 +28,7 @@ class ViewQuery:
     def _delete_client(self):
         try:
             query = 'DELETE FROM clients WHERE ID=?'
-            parameters=(self._date_client[1], )
+            parameters=(self._data_client[1], )
             print(parameters)
             db()._connect_db(query, parameters)
             self._message_client_view.configure(text='Cliente borrado', fg_color=setting.APPROVED, corner_radius=60)
@@ -44,7 +44,7 @@ class ViewQuery:
 
     def _edit_client(self):
         try:
-            if self._date_client[0] != '':
+            if self._data_client[0] != '':
                 self._entry_normal()
                 self._radiobutton_pay_view.configure(state='normal')
                 self._radiobutton_earring_view.configure(state='normal')
@@ -60,7 +60,7 @@ class ViewQuery:
                     if self._location_view.get() != 'Ubicación':
                         self._is_edit = False
                         query = 'UPDATE clients SET NAME=?, DNI=?, TLF=?, LOCATION=?, MG=?, IP=?, PAY=? WHERE ID=?'
-                        parameters = (self._name_entry_view.get(), self._dni_entry_view.get(), self._tlf_entry_view.get(), self._location_view.get(), self._mg_entry_view.get(), self._ip_entry_view.get(), self._radio_var_view.get(), self._date_client[1])
+                        parameters = (self._name_entry_view.get(), self._dni_entry_view.get(), self._tlf_entry_view.get(), self._location_view.get(), self._mg_entry_view.get(), self._ip_entry_view.get(), self._radio_var_view.get(), self._data_client[1])
                         db()._connect_db(query, parameters)
                         self._message_client_view.configure(text='Cliente actualizado con exito', fg_color=setting.APPROVED, corner_radius=60)
                         self._get_clients()
