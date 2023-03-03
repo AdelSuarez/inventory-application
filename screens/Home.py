@@ -8,40 +8,60 @@ import settings.settings as setting
 from src.LocationQuery import LocationQuery as fl
 from src.CreateClientQuery import CreateClientQuery as fc
 from src.ViewQuery import ViewQuery as fv
+from src.export_to_excel import _export_excel
 
 class HomeScreen(customtkinter.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.configure(corner_radius=0)
-        self.date_client = []
+        self.data_client = []
         self.list=[]
         self._logo_img_reset = customtkinter.CTkImage(Image.open(os.path.join("img/", "reset.png")), size=(25, 25))
         self._configure_win()
-        self._controller_frame()
+        self._init_widgets()
         self._table()
         style = ttk.Style()
         style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=('Oswald', 12)) # Modify the font of the body
         style.configure("mystyle.Treeview.Heading", font=('Oswald', 12,'bold')) # Modify the font of the headings
         style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
-    def _controller_frame(self):
+    def _init_widgets(self):
         self._controller = customtkinter.CTkFrame(master=self, corner_radius=0)
         self._controller.grid(row=0, column=0, sticky=customtkinter.NSEW)
 
-        self.tabview = customtkinter.CTkTabview(self._controller)
-        self.tabview.grid(row=0, column=0, padx=10, columnspan=2, sticky=customtkinter.NSEW)
-        self.tabview.add("Datos de cliente")
-        self.tabview.add("Crear cliente")
-        self.tabview.add("Configuraciones de Ubicación")
-        self.tabview.tab("Datos de cliente").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-        self.tabview.tab("Crear cliente").grid_columnconfigure(0, weight=1)
-        self.tabview.tab("Configuraciones de Ubicación").grid_columnconfigure(0, weight=1)
-        self._view_client(self.tabview.tab('Datos de cliente'))
-        self._create_client(self.tabview.tab('Crear cliente'))
-        self._location_settings_view(self.tabview.tab('Configuraciones de Ubicación'))
+        self._tabview = customtkinter.CTkTabview(self._controller)
+        self._tabview.grid(row=0, column=0, padx=10, columnspan=2, sticky=customtkinter.NSEW)
+        self._tabview.add("Datos de cliente")
+        self._tabview.add("Crear cliente")
+        self._tabview.add("Configuraciones de Ubicación")
+        self._tabview.tab("Datos de cliente").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
+        self._tabview.tab("Crear cliente").grid_columnconfigure(0, weight=1)
+        self._tabview.tab("Configuraciones de Ubicación").grid_columnconfigure(0, weight=1)
+        self._view_client(self._tabview.tab('Datos de cliente'))
+        self._create_client(self._tabview.tab('Crear cliente'))
+        self._location_settings_view(self._tabview.tab('Configuraciones de Ubicación'))
 
         # States Frame
-        self._state_frame = customtkinter.CTkFrame(self._controller)
+        self._statistics_frame(self._controller)
+        self._btn_frame_main(self._controller)
+
+        # Settings Frame
+        self._controller.columnconfigure(0, weight=1)
+        self._controller.columnconfigure(1, weight=1)
+        self._controller.rowconfigure(0, weight=1)
+        self._counter()
+
+    def _btn_frame_main(self, main):
+        self._btn_main = customtkinter.CTkFrame(main, fg_color='transparent')
+        self._btn_main.grid(row=2, column=0, padx=10, pady=10, columnspan=2, sticky=customtkinter.NSEW)
+
+        self._btn_export_excel = customtkinter.CTkButton(self._btn_main, text='Exportar a Excel', command=lambda:_export_excel())
+        self._btn_export_excel.grid(row=0, column=0, sticky=customtkinter.E)
+        
+        self._btn_main.columnconfigure(0, weight=1)
+
+    def _statistics_frame(self, main):
+        self._state_frame = customtkinter.CTkFrame(main)
         self._state_frame.grid(row=1, column=0, columnspan=2,pady=10,padx=10 , sticky=customtkinter.NSEW)
     
         self._state_title = customtkinter.CTkLabel(self._state_frame, text='Estadisticas', fg_color=setting.BACKGROUND, corner_radius=5)
@@ -65,56 +85,22 @@ class HomeScreen(customtkinter.CTkFrame):
         self._mg_state_frame = customtkinter.CTkFrame(self._state_frame, fg_color='transparent')
         self._mg_state_frame.grid(row=2, column=0, columnspan=2, sticky=customtkinter.NSEW)
         self._counter_mg_title_pay = customtkinter.CTkLabel(self._mg_state_frame, text='Megas Pagos:', font=customtkinter.CTkFont( weight=setting.FONT))
-        self._counter_mg_title_pay.grid(row=0, column=0, pady=(5,0), padx=(10, 0), sticky= customtkinter.W)
+        self._counter_mg_title_pay.grid(row=0, column=0, pady=5, padx=(10, 0), sticky= customtkinter.W)
 
         self._counter_mg_state_pay = customtkinter.CTkLabel(self._mg_state_frame, text='0', font=customtkinter.CTkFont( weight=setting.FONT))
-        self._counter_mg_state_pay.grid(row=0, column=1, pady=(5,0), padx=(0, 10), sticky= customtkinter.E )
+        self._counter_mg_state_pay.grid(row=0, column=1, pady=5, padx=(0, 10), sticky= customtkinter.E )
         
         self._counter_mg_title_earring = customtkinter.CTkLabel(self._mg_state_frame, text='Megas Pendientes:', font=customtkinter.CTkFont( weight=setting.FONT))
-        self._counter_mg_title_earring.grid(row=0, column=2, pady=(5,0), padx=(10, 0), sticky= customtkinter.W)
+        self._counter_mg_title_earring.grid(row=0, column=2, pady=5, padx=(10, 0), sticky= customtkinter.W)
 
         self._counter_mg_state_earring = customtkinter.CTkLabel(self._mg_state_frame, text='0', font=customtkinter.CTkFont( weight=setting.FONT))
-        self._counter_mg_state_earring.grid(row=0, column=3, pady=(5,0), padx=(0, 10), sticky= customtkinter.E )
+        self._counter_mg_state_earring.grid(row=0, column=3, pady=5, padx=(0, 10), sticky= customtkinter.E )
 
-        # Settings Frame
-        self._controller.columnconfigure(0, weight=1)
         self._state_frame.columnconfigure(0, weight=1)
         self._label_state_frame.columnconfigure(0, weight=1)
         self._label_state_frame.columnconfigure(1, weight=1)
         self._mg_state_frame.columnconfigure(0, weight=1)
         self._mg_state_frame.columnconfigure(3, weight=1)
-
-
-        # self._controller.rowconfigure(0, weight=1)
-        # self._controller.rowconfigure(0, weight=2)
-
-        self._controller.columnconfigure(1, weight=1)
-        self._counter()
-
-
-    def _counter(self):
-        counter_client = 0
-        counter_mg = 0
-        counter_mg_pay = 0
-        counter_mg_earring = 0
-
-
-        query = 'SELECT * FROM clients'
-        clients = db()._connect_db(query)
-        for i in clients:
-            counter_client += 1
-            counter_mg += i[5]
-            if i[7] == 'Pago':
-                counter_mg_pay += i[5]
-            elif i[7] == 'Pendiente':
-                counter_mg_earring += i[5]
-
-
-        self._counter_client_state.configure(text=str(counter_client))
-        self._counter_mg_state.configure(text=str(counter_mg))
-        self._counter_mg_state_pay.configure(text=str(counter_mg_pay))
-        self._counter_mg_state_earring.configure(text=str(counter_mg_earring))
-
 
     def _view_client(self, wind):
         self._view_client_frame = customtkinter.CTkFrame(wind)
@@ -212,7 +198,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._dni_tlf_frame.columnconfigure(3, weight=2)
         self._view_client_frame.columnconfigure(1, weight=1)
 
-        fv_parameters = fv(self._name_entry_view, self._dni_entry_view, self._tlf_entry_view, self._location_view, self._mg_entry_view, self._ip_entry_view, self._radio_var_view, self.date_client, self._get_clients, self._message_client_view, self._entry_normal, self._entry_clear, self._entry_disabled, self._radiobutton_pay_view, self._radiobutton_earring_view, self._counter)
+        fv_parameters = fv(self._name_entry_view, self._dni_entry_view, self._tlf_entry_view, self._location_view, self._mg_entry_view, self._ip_entry_view, self._radio_var_view, self.data_client, self._get_clients, self._message_client_view, self._entry_normal, self._entry_clear, self._entry_disabled, self._radiobutton_pay_view, self._radiobutton_earring_view, self._counter)
 
     def _create_client(self, wind):
         self._create_client_frame = customtkinter.CTkFrame(wind)
@@ -221,8 +207,8 @@ class HomeScreen(customtkinter.CTkFrame):
             fill = tk.BOTH, 
             expand = True)
 
-        self._date = customtkinter.CTkLabel(self._create_client_frame, text="Datos:", font=customtkinter.CTkFont( weight=setting.FONT))
-        self._date.grid(row=1, column=0, padx=10, sticky=customtkinter.W)
+        self._data = customtkinter.CTkLabel(self._create_client_frame, text="Datos:", font=customtkinter.CTkFont( weight=setting.FONT))
+        self._data.grid(row=1, column=0, padx=10, sticky=customtkinter.W)
 
         self._name_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Nombre del cliente", height=40)
         self._name_entry.grid(row=2, column=0,columnspan=2, sticky=customtkinter.NSEW)
@@ -353,16 +339,16 @@ class HomeScreen(customtkinter.CTkFrame):
         self.table.tag_configure('Pago', background=setting.CLIENT_PAY)
         self.table.tag_configure('Pendiente', background=setting.CLIENT_EARRING)
         self.table.grid(row=0, column=1, sticky=tk.NSEW, pady=10, padx=10)
-        self.table.bind('<<TreeviewSelect>>', self._client_view_date)
+        self.table.bind('<<TreeviewSelect>>', self._client_view_data)
         self._get_clients()
 
-    def _client_view_date(self, e):
-        self.date_client.clear()
+    def _client_view_data(self, e):
+        self.data_client.clear()
         try:
             self._message_client_view.grid_forget()
 
-            self.date_client.append(self.table.item(self.table.selection())['values'][0])
-            self.date_client.append(self.table.item(self.table.selection())['values'][7])
+            self.data_client.append(self.table.item(self.table.selection())['values'][0])
+            self.data_client.append(self.table.item(self.table.selection())['values'][7])
             client_name = self.table.item(self.table.selection())['values'][0]
             client_dni = self.table.item(self.table.selection())['values'][5]
             client_tlf = self.table.item(self.table.selection())['values'][6]
@@ -402,7 +388,6 @@ class HomeScreen(customtkinter.CTkFrame):
         except Exception as e:
             self._message_client_view.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
-
     def _entry_normal(self):
         self._name_entry_view.configure(state='normal')
         self._dni_entry_view.configure(state='normal')
@@ -425,9 +410,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._tlf_entry_view.delete(0, customtkinter.END)
         self._mg_entry_view.delete(0, customtkinter.END)
         self._ip_entry_view.delete(0, customtkinter.END)
-
         
-    
     def _reset_location(self, optionMenu):
         self.list = db()._locations_optionmenu(self.list)
         optionMenu.configure(values=self.list)
@@ -437,7 +420,6 @@ class HomeScreen(customtkinter.CTkFrame):
 
     def _hide_message_location_frame(self, e):
         self._message_location.grid_forget()
-
 
     def _get_clients(self):
 
@@ -449,6 +431,26 @@ class HomeScreen(customtkinter.CTkFrame):
         clients = db()._connect_db(query)
         for client in clients:
             self.table.insert('', 0, text=client[0] , values=[client[1], client[4],client[6], client[5], client[7], client[2], client[3], client[0]], tags=(client[7],))
+
+    def _counter(self):
+        counter_client = 0
+        counter_mg = 0
+        counter_mg_pay = 0
+        counter_mg_earring = 0
+
+        for i in db()._all_clients():
+            counter_client += 1
+            counter_mg += i[5]
+            if i[7] == 'Pago':
+                counter_mg_pay += i[5]
+            elif i[7] == 'Pendiente':
+                counter_mg_earring += i[5]
+
+
+        self._counter_client_state.configure(text=str(counter_client))
+        self._counter_mg_state.configure(text=str(counter_mg))
+        self._counter_mg_state_pay.configure(text=str(counter_mg_pay))
+        self._counter_mg_state_earring.configure(text=str(counter_mg_earring))
 
     def _configure_win(self):
         self.grid(row=1, column=0, sticky=customtkinter.NSEW)
