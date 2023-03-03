@@ -299,13 +299,10 @@ class HomeScreen(customtkinter.CTkFrame):
         self._table_location.column('#1', width=0, stretch=tk.NO)
         self._table_location.heading("#1",text="",anchor=tk.CENTER)
 
-        self.xscroll = customtkinter.CTkScrollbar(self._location_settings_frame,command=self._table_location.xview)
         self.yscroll = customtkinter.CTkScrollbar(self._location_settings_frame, command=self._table_location.yview)
-        self.xscroll.grid(row=2, column=1, sticky='ew')
         self.yscroll.grid(column=1, row=2, sticky='ns')
 
-        self._table_location.configure(yscrollcommand=self.yscroll.set,
-                               xscrollcommand=self.xscroll.set)
+        self._table_location.configure(yscrollcommand=self.yscroll.set)
         self._table_location.grid(row=2, column=0, sticky=customtkinter.NSEW, pady=5)
         # self._table_location.bind('<<TreeviewSelect>>', self._hide_message_location_frame)
 
@@ -322,7 +319,6 @@ class HomeScreen(customtkinter.CTkFrame):
 
 # Nombre, ubicacion, IP, MG, Estado
     def _table(self):
-
         self.table = ttk.Treeview(self, columns=('name', 'location', 'IP', 'MG', 'state'), padding=[0,0,0,0,0], style="mystyle.Treeview")
         self.table.column('#0', width=0, stretch=tk.NO)
         self.table.heading("#0",text="",anchor=tk.CENTER)
@@ -338,7 +334,11 @@ class HomeScreen(customtkinter.CTkFrame):
         self.table.heading('state', text='Estado')
         self.table.tag_configure('Pago', background=setting.CLIENT_PAY)
         self.table.tag_configure('Pendiente', background=setting.CLIENT_EARRING)
-        self.table.grid(row=0, column=1, sticky=tk.NSEW, pady=10, padx=10)
+        self.yscroll = customtkinter.CTkScrollbar(self, command=self.table.yview)
+        self.yscroll.grid(column=2, row=0, sticky='ns')
+
+        self.table.configure(yscrollcommand=self.yscroll.set)
+        self.table.grid(row=0, column=1, sticky=tk.NSEW, pady=10, padx=(10,0))
         self.table.bind('<<TreeviewSelect>>', self._client_view_data)
         self._get_clients()
 

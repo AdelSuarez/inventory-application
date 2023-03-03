@@ -23,7 +23,7 @@ class DataBase:
         return list
     
     def _all_clients(self):
-        query = 'SELECT * FROM clients'
+        query = 'SELECT * FROM clients ORDER BY LOCATION DESC'
         return self._connect_db(query).fetchall()
         
         

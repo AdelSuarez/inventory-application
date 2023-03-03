@@ -26,6 +26,8 @@ class CreateClientQuery:
             
             if validate_empty_int(self._dni_entry.get()) and validate_empty_int(self._tlf_entry.get()) and validate_empty_int(self._megas_entry.get()) and validate_empty_int(delete_point(self._ip_entry, self._message(self._message_client,'Introduce solo números', setting.WARNING))):
                 if self._location.get() != 'Ubicación':
+                    if self._radio_var.get() == '':
+                        self._radio_var.set('Pendiente')
                     parameters = (self._name_entry.get(), self._dni_entry.get(), self._tlf_entry.get(), self._location.get(), self._megas_entry.get(), self._ip_entry.get(), self._radio_var.get())
                     query = 'INSERT INTO clients VALUES(NULL,?,?,?,?,?,?,?)'
                     db()._connect_db(query, parameters)
