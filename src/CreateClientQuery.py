@@ -1,7 +1,7 @@
 import customtkinter
 from database.DataBase import DataBase as db
 import settings.settings as setting
-from src.checkers  import validate_empty_int
+from src.checkers  import validate_empty_int , delete_point
 
 
 class CreateClientQuery:
@@ -21,10 +21,10 @@ class CreateClientQuery:
         
     
     def _create_client(self):
-        self._delete_point(self._ip_entry)
+        delete_point(self._ip_entry, self._message(self._message_client,'Introduce solo números', setting.WARNING))
         if len(self._name_entry.get()) != 0 and len(self._dni_entry.get()) != 0 and len(self._tlf_entry.get()) != 0 and len(self._megas_entry.get()) != 0:
             
-            if validate_empty_int(self._dni_entry.get()) and validate_empty_int(self._tlf_entry.get()) and validate_empty_int(self._megas_entry.get()) and validate_empty_int(self._delete_point(self._ip_entry)):
+            if validate_empty_int(self._dni_entry.get()) and validate_empty_int(self._tlf_entry.get()) and validate_empty_int(self._megas_entry.get()) and validate_empty_int(delete_point(self._ip_entry, self._message(self._message_client,'Introduce solo números', setting.WARNING))):
                 if self._location.get() != 'Ubicación':
                     parameters = (self._name_entry.get(), self._dni_entry.get(), self._tlf_entry.get(), self._location.get(), self._megas_entry.get(), self._ip_entry.get(), self._radio_var.get())
                     query = 'INSERT INTO clients VALUES(NULL,?,?,?,?,?,?,?)'
@@ -48,17 +48,6 @@ class CreateClientQuery:
 
         else:
             self._message(self._message_client, 'No dejar Campos vacios', setting.WARNING)
-
-    
-    def _delete_point(self, number):
-        try:
-            ip  = ''
-            for i in number.get():
-                if i != '.':
-                    ip += i
-            return int(ip)
-        except Exception:
-            self._message(self._message_client,'Introduce solo números', setting.WARNING)
 
     
     def _message(self, message, text, color):

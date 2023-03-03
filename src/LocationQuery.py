@@ -24,8 +24,7 @@ class LocationQuery:
                 db()._connect_db(query, parameter)
                 self._location_entry.delete(0, customtkinter.END)
                 self._get_locations()
-                self._message_location.configure(text='Ubicación creada con exito', fg_color=setting.APPROVED, corner_radius=60)
-                self._message(self._message_location, 'Guardado Con exito', setting.APPROVED)
+                self._message(self._message_location, 'Guardado con exito', setting.APPROVED)
 
             elif self._mode == 'edit':
                 if self._location_entry.get() == self._table_location.item(self._table_location.selection())['text']:
@@ -35,7 +34,6 @@ class LocationQuery:
                     parameters = (self._location_entry.get(), self._table_location.item(self._table_location.selection())['values'][0])
                     db()._connect_db(query, parameters)
                     self._get_locations()
-                    self._message_location.configure(text='Ubicación actualizada con exito', fg_color=setting.APPROVED, corner_radius=60)
                     self._mode = 'save'
                     self._location_entry.delete(0, customtkinter.END)
                     self._message(self._message_location, 'Actualizado con exito', setting.APPROVED)

@@ -1,7 +1,7 @@
 import customtkinter
 from database.DataBase import DataBase as db
 import settings.settings as setting
-from src.checkers  import validate_empty_int
+from src.checkers  import validate_empty_int , delete_point
 
 
 class ViewQuery:
@@ -31,7 +31,6 @@ class ViewQuery:
             parameters=(self._data_client[1], )
             print(parameters)
             db()._connect_db(query, parameters)
-            self._message_client_view.configure(text='Cliente borrado', fg_color=setting.APPROVED, corner_radius=60)
             self._get_clients()
             self._entry_normal()
             self._entry_clear()
@@ -54,15 +53,14 @@ class ViewQuery:
 
     def _save_edit(self):
         if self._is_edit:
-            self._delete_point(self._ip_entry_view)
+            delete_point(self._ip_entry_view, self._message(self._message_client_view,'Introduce solo números', setting.WARNING))
             if len(self._name_entry_view.get()) != 0 and len(self._dni_entry_view.get()) != 0 and len(self._tlf_entry_view.get()) != 0 and len(self._mg_entry_view.get()) != 0:
-                if validate_empty_int(self._dni_entry_view.get()) and validate_empty_int(self._tlf_entry_view.get()) and validate_empty_int(self._mg_entry_view.get()) and validate_empty_int(self._delete_point(self._ip_entry_view)):
+                if validate_empty_int(self._dni_entry_view.get()) and validate_empty_int(self._tlf_entry_view.get()) and validate_empty_int(self._mg_entry_view.get()) and validate_empty_int(delete_point(self._ip_entry_view, self._message(self._message_client_view,'Introduce solo números', setting.WARNING))):
                     if self._location_view.get() != 'Ubicación':
                         self._is_edit = False
                         query = 'UPDATE clients SET NAME=?, DNI=?, TLF=?, LOCATION=?, MG=?, IP=?, PAY=? WHERE ID=?'
                         parameters = (self._name_entry_view.get(), self._dni_entry_view.get(), self._tlf_entry_view.get(), self._location_view.get(), self._mg_entry_view.get(), self._ip_entry_view.get(), self._radio_var_view.get(), self._data_client[1])
                         db()._connect_db(query, parameters)
-                        self._message_client_view.configure(text='Cliente actualizado con exito', fg_color=setting.APPROVED, corner_radius=60)
                         self._get_clients()
                         self._entry_normal()
                         self._entry_clear()
@@ -82,17 +80,6 @@ class ViewQuery:
 
         else:
             self._message(self._message_client_view, 'Seleccione un cliente', setting.WARNING)
-    
-    def _delete_point(self, number):
-        try:
-            ip  = ''
-            for i in number.get():
-                if i != '.':
-                    ip += i
-            return int(ip)
-        except Exception:
-            self._message(self._message_client_view,'Introduce solo números', setting.WARNING)
-
     def _location_radiobtn_deselect(self):
         self._location_view.set("Ubicación")
         self._radiobutton_pay_view.configure(state='disabled')
