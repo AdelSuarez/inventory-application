@@ -21,6 +21,10 @@ class DataBase:
         for i in locations:
             list.append(i[1])
         return list
+    
+    def _all_clients(self):
+        query = 'SELECT * FROM clients'
+        return self._connect_db(query).fetchall()
         
         
         
