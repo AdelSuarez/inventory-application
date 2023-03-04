@@ -9,7 +9,8 @@ query_client = '''CREATE TABLE IF NOT EXISTS clients (
         LOCATION TEXT NOT NULL,
         MG INTEGER NOT NULL,
         IP INTEGER NOT NULL ,
-        PAY TEXT
+        PAY TEXT,
+        EMAIL TEXT
         )
 '''
 
