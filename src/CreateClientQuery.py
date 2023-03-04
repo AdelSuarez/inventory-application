@@ -5,13 +5,14 @@ from src.checkers  import validate_empty_int , delete_point
 
 
 class CreateClientQuery:
-    def __init__(self, name_entry, dni_entry, tlf_entry, location, megas_entry, ip_entry, radio_var, message, table, radiobtn_pay, radiobtn_earring, counter_client):
+    def __init__(self, name_entry, dni_entry, tlf_entry, location, megas_entry, ip_entry, email_entry,radio_var, message, table, radiobtn_pay, radiobtn_earring, counter_client):
         self._name_entry = name_entry
         self._dni_entry = dni_entry
         self._tlf_entry = tlf_entry
         self._location = location
         self._megas_entry = megas_entry
         self._ip_entry = ip_entry
+        self._email_entry = email_entry
         self._radio_var = radio_var
         self._message_client = message
         self.table = table
@@ -28,8 +29,8 @@ class CreateClientQuery:
                 if self._location.get() != 'Ubicación':
                     if self._radio_var.get() == '':
                         self._radio_var.set('Pendiente')
-                    parameters = (self._name_entry.get(), self._dni_entry.get(), self._tlf_entry.get(), self._location.get(), self._megas_entry.get(), self._ip_entry.get(), self._radio_var.get())
-                    query = 'INSERT INTO clients VALUES(NULL,?,?,?,?,?,?,?)'
+                    parameters = (self._name_entry.get(), self._dni_entry.get(), self._tlf_entry.get(), self._location.get(), self._megas_entry.get(), self._ip_entry.get(), self._radio_var.get(), self._email_entry.get())
+                    query = 'INSERT INTO clients VALUES(NULL,?,?,?,?,?,?,?,?)'
                     db()._connect_db(query, parameters)
                     self.table()
                     self._name_entry.delete(0, customtkinter.END)
@@ -53,7 +54,7 @@ class CreateClientQuery:
 
     
     def _message(self, message, text, color):
-        message.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
+        message.grid(row=10, column=0, columnspan=2, sticky=customtkinter.NSEW)
         message.configure(text=text, fg_color=color, corner_radius=60)
     
 
