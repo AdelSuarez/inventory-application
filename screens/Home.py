@@ -5,9 +5,9 @@ import tkinter as tk
 from tkinter import ttk
 from database.DataBase import DataBase as db
 import settings.settings as setting
-from src.LocationQuery import LocationQuery as fl
-from src.CreateClientQuery import CreateClientQuery as fc
-from src.ViewQuery import ViewQuery as fv
+from src.LocationQuery import LocationQuery as lq
+from src.CreateClientQuery import CreateClientQuery as qc
+from src.ViewQuery import ViewQuery as vq
 from src.export_to_excel import _export_excel
 
 class HomeScreen(customtkinter.CTkFrame):
@@ -161,20 +161,29 @@ class HomeScreen(customtkinter.CTkFrame):
         self._ip_entry_view = customtkinter.CTkEntry(self._mg_ip_frame, border_width=0, state='disabled', height=40)
         self._ip_entry_view.grid(row=0, column=3, sticky=customtkinter.NSEW)
 
+
+        self._email_frame = customtkinter.CTkFrame(self._view_client_frame, fg_color='transparent')
+        self._email_frame.grid(row=6, column=0, columnspan=2, sticky=customtkinter.NSEW, pady=10)
+        self._email_title = customtkinter.CTkLabel(self._email_frame, text='Email:', font=customtkinter.CTkFont( weight=setting.FONT))
+        self._email_title.grid(row=0, column=0, padx=(0, 10))
+
+        self._email_entry_view = customtkinter.CTkEntry(self._email_frame, border_width=0, state='disabled', height=40)
+        self._email_entry_view.grid(row=0, column=1, sticky=customtkinter.NSEW)
+
         self._pay_state = customtkinter.CTkLabel(self._view_client_frame, text="Estado del Mes:", font=customtkinter.CTkFont( weight=setting.FONT))
-        self._pay_state.grid(row=6, column=0, padx=10, sticky=customtkinter.W)
+        self._pay_state.grid(row=7, column=0, padx=10, sticky=customtkinter.W)
 
         self._radio_var_view = tk.StringVar()
         self._radiobutton_pay_view = customtkinter.CTkRadioButton(self._view_client_frame, text="Pago",
                                             variable= self._radio_var_view, value='Pago', state='disabled')
         self._radiobutton_earring_view = customtkinter.CTkRadioButton(self._view_client_frame, text="Pendiente",
                                             variable= self._radio_var_view, value='Pendiente', state='disabled')
-        self._radiobutton_pay_view.grid(row=7, column=0)
-        self._radiobutton_earring_view.grid(row=7, column=1)
+        self._radiobutton_pay_view.grid(row=8, column=0)
+        self._radiobutton_earring_view.grid(row=8, column=1)
 
         self._btn_frame = customtkinter.CTkFrame(self._view_client_frame)
         self._btn_frame.configure(fg_color='transparent')
-        self._btn_frame.grid(row=8, column=0, pady=10, columnspan=2, sticky=customtkinter.NSEW)
+        self._btn_frame.grid(row=9, column=0, pady=10, columnspan=2, sticky=customtkinter.NSEW)
 
         self._btn_delete_location = customtkinter.CTkButton(self._btn_frame, text="Borrar", width=60, fg_color=setting.WARNING, command=lambda:fv_parameters._delete_client())
         self._btn_delete_location.grid(row=0, column=0,  sticky=customtkinter.NSEW)
@@ -187,6 +196,7 @@ class HomeScreen(customtkinter.CTkFrame):
         # self._message_client_view.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
         self._name_view_frame.columnconfigure(1, weight=1)
+        self._email_frame.columnconfigure(1, weight=1)
         self._btn_frame.columnconfigure(0, weight=1)
         self._btn_frame.columnconfigure(1, weight=1)
         self._btn_frame.columnconfigure(2, weight=1)
@@ -198,7 +208,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._dni_tlf_frame.columnconfigure(3, weight=2)
         self._view_client_frame.columnconfigure(1, weight=1)
 
-        fv_parameters = fv(self._name_entry_view, self._dni_entry_view, self._tlf_entry_view, self._location_view, self._mg_entry_view, self._ip_entry_view, self._radio_var_view, self.data_client, self._get_clients, self._message_client_view, self._entry_normal, self._entry_clear, self._entry_disabled, self._radiobutton_pay_view, self._radiobutton_earring_view, self._counter)
+        fv_parameters = vq(self._name_entry_view, self._dni_entry_view, self._tlf_entry_view, self._location_view, self._mg_entry_view, self._ip_entry_view,self._email_entry_view, self._radio_var_view, self.data_client, self._get_clients, self._message_client_view, self._entry_normal, self._entry_clear, self._entry_disabled, self._radiobutton_pay_view, self._radiobutton_earring_view, self._counter)
 
     def _create_client(self, wind):
         self._create_client_frame = customtkinter.CTkFrame(wind)
@@ -244,20 +254,23 @@ class HomeScreen(customtkinter.CTkFrame):
         self._ip_entry_create.grid(row=5, column=1, sticky=customtkinter.NSEW)
         self._ip_entry_create.bind('<Button-1>', self._hide_message_client_frame)
 
+        self._email_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Correo Electronico", height=40)
+        self._email_entry_create.grid(row=6, column=0, pady=(10,0), columnspan=2, sticky=customtkinter.NSEW)
+
         self._pay_create = customtkinter.CTkLabel(self._create_client_frame, text="Pago de mes:", font=customtkinter.CTkFont( weight=setting.FONT))
-        self._pay_create.grid(row=6, column=0, padx=10, sticky=customtkinter.W)
+        self._pay_create.grid(row=7, column=0, padx=10, sticky=customtkinter.W)
 
         self._radio_var = tk.StringVar()
         self._radiobutton_pay = customtkinter.CTkRadioButton(self._create_client_frame, text="Pago",
                                             variable= self._radio_var, value='Pago')
         self._radiobutton_earring = customtkinter.CTkRadioButton(self._create_client_frame, text="Pendiente",
                                             variable= self._radio_var, value='Pendiente')
-        self._radiobutton_pay.grid(row=7, column=0)
-        self._radiobutton_earring.grid(row=7, column=1)
+        self._radiobutton_pay.grid(row=8, column=0)
+        self._radiobutton_earring.grid(row=8, column=1)
 
 
         self._btn_add_location = customtkinter.CTkButton(self._create_client_frame, text="Crear cliente", command=lambda: fc_parameters._create_client())
-        self._btn_add_location.grid(row=8, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
+        self._btn_add_location.grid(row=9, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
 
         self._message_client_create = customtkinter.CTkLabel(self._create_client_frame, text='')
         # self._message_client_create.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
@@ -266,7 +279,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._create_client_frame.columnconfigure(0, weight=1)
         self._create_client_frame.columnconfigure(1, weight=1)
 
-        fc_parameters = fc(self._name_entry, self._dni_entry_create, self._tlf_entry_create, self._location, self._megas_entry_create, self._ip_entry_create, self._radio_var, self._message_client_create, self._get_clients, self._radiobutton_pay, self._radiobutton_earring, self._counter) # instance of the class that contains the functions
+        fc_parameters = qc(self._name_entry, self._dni_entry_create, self._tlf_entry_create, self._location, self._megas_entry_create, self._ip_entry_create, self._email_entry_create, self._radio_var, self._message_client_create, self._get_clients ,self._radiobutton_pay, self._radiobutton_earring, self._counter) # instance of the class that contains the functions
 
     def _location_settings_view(self, wind):
 
@@ -314,7 +327,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._btn_location_settings.columnconfigure(2, weight=1)
         self._location_settings_frame.columnconfigure(0, weight=1)
 
-        fl_parameters = fl(self._location_entry, self._table_location, self._message_location)
+        fl_parameters = lq(self._location_entry, self._table_location, self._message_location)
         fl_parameters._get_locations()
 
 # Nombre, ubicacion, IP, MG, Estado
@@ -356,6 +369,7 @@ class HomeScreen(customtkinter.CTkFrame):
             client_ip = self.table.item(self.table.selection())['values'][2]
             client_location = self.table.item(self.table.selection())['values'][1]
             client_state = self.table.item(self.table.selection())['values'][4]
+            client_email = self.table.item(self.table.selection())['values'][8]
             self._entry_normal()
             self._entry_clear()
 
@@ -364,6 +378,7 @@ class HomeScreen(customtkinter.CTkFrame):
             self._tlf_entry_view.insert(0, client_tlf)
             self._mg_entry_view.insert(0, client_megas)
             self._ip_entry_view.insert(0, client_ip)
+            self._email_entry_view.insert(0, client_email)
             self._location_view.set(client_location)
             self._entry_disabled()
 
@@ -386,7 +401,7 @@ class HomeScreen(customtkinter.CTkFrame):
                 self._radiobutton_earring_view.configure(state='disabled')
                 self._radiobutton_earring_view.deselect()
         except Exception as e:
-            self._message_client_view.grid(row=9, column=0, columnspan=2, sticky=customtkinter.NSEW)
+            self._message_client_view.grid(row=10, column=0, columnspan=2, sticky=customtkinter.NSEW)
 
     def _entry_normal(self):
         self._name_entry_view.configure(state='normal')
@@ -395,6 +410,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._mg_entry_view.configure(state='normal')
         self._ip_entry_view.configure(state='normal')
         self._location_view.configure(state='normal')
+        self._email_entry_view.configure(state='normal')
     
     def _entry_disabled(self):
         self._name_entry_view.configure(state='disabled')
@@ -403,6 +419,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._mg_entry_view.configure(state='disabled')
         self._ip_entry_view.configure(state='disabled')
         self._location_view.configure(state='disabled')
+        self._email_entry_view.configure(state='disabled')
     
     def _entry_clear(self):
         self._name_entry_view.delete(0, customtkinter.END)
@@ -410,6 +427,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._tlf_entry_view.delete(0, customtkinter.END)
         self._mg_entry_view.delete(0, customtkinter.END)
         self._ip_entry_view.delete(0, customtkinter.END)
+        self._email_entry_view.delete(0, customtkinter.END)
         
     def _reset_location(self, optionMenu):
         self.list = db()._locations_optionmenu(self.list)
@@ -430,7 +448,7 @@ class HomeScreen(customtkinter.CTkFrame):
         query = 'SELECT * FROM clients ORDER BY LOCATION DESC'
         clients = db()._connect_db(query)
         for client in clients:
-            self.table.insert('', 0, text=client[0] , values=[client[1], client[4],client[6], client[5], client[7], client[2], client[3], client[0]], tags=(client[7],))
+            self.table.insert('', 0, text=client[0] , values=[client[1], client[4],client[6], client[5], client[7], client[2], client[3], client[0], client[8]], tags=(client[7],))
 
     def _counter(self):
         counter_client = 0
