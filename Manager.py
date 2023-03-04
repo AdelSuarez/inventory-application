@@ -21,8 +21,8 @@ class Manager(customtkinter.CTk):
 
     def _configure_window(self):
         # Main window setting
-        self.geometry('1200x700')
-        self.minsize(width=1200, height=700)
+        self.geometry('1230x735')
+        self.minsize(width=1230, height=735)
         self.title('Control de clientes')
 
 
