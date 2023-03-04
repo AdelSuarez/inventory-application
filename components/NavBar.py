@@ -1,8 +1,10 @@
 import tkinter as tk
 import customtkinter
-import settings.settings as setting
 import threading
 import time
+# import datetime
+
+import settings.settings as setting
 
 
 class Navbar(customtkinter.CTkFrame):
@@ -24,6 +26,11 @@ class Navbar(customtkinter.CTkFrame):
 
         # end time background task
         self.master.bind('<Destroy>', self._finish_execution)
+
+        # TODO
+        # The variables year and month are going to be used to create a function that restores the values ​​of the payment of the clients every month
+        # ano = datetime.datetime.today().year
+        # mes = datetime.datetime.today().month
 
 
     def _init_widget(self):
