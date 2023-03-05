@@ -38,6 +38,7 @@ class CreateClientQuery:
                     self._tlf_entry.delete(0, customtkinter.END)
                     self._megas_entry.delete(0, customtkinter.END)
                     self._ip_entry.delete(0, customtkinter.END)
+                    self._email_entry.delete(0, customtkinter.END)
                     self._radiobtn_pay.deselect(0)
                     self._radiobtn_earring.deselect(0)
                     self._location.set("Ubicación")
