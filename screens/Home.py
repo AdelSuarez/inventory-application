@@ -9,24 +9,39 @@ from src.LocationQuery import LocationQuery as lq
 from src.CreateClientQuery import CreateClientQuery as qc
 from src.ViewQuery import ViewQuery as vq
 from src.export_to_excel import _export_excel
+from components.NavBar import Navbar
+from components.NotificationBar import NotificationBar
 
 class HomeScreen(customtkinter.CTkFrame):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.configure(corner_radius=0)
+    def __init__(self, parent, manager):
+        super().__init__(parent)
+        self.manager = manager
         self.data_client = []
         self.list=[]
-        self._logo_img_reset = customtkinter.CTkImage(Image.open(os.path.join("img/", "reset.png")), size=(25, 25))
-        self._configure_win()
+        self._icon_reset = customtkinter.CTkImage(Image.open(os.path.join("img/", "reset2.png")), size=(28, 28))
+        self._configure_self()
+        self.navbar = Navbar(self, self.manager)
         self._init_widgets()
-        self._table()
+        self.notification_var= NotificationBar(self)
         style = ttk.Style()
         style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=('Oswald', 12)) # Modify the font of the body
         style.configure("mystyle.Treeview.Heading", font=('Oswald', 12,'bold')) # Modify the font of the headings
         style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
+
     def _init_widgets(self):
-        self._controller = customtkinter.CTkFrame(master=self, corner_radius=0)
+        self._init_frame = customtkinter.CTkFrame(master=self, corner_radius=0)
+        self._init_frame.grid(row=1, column=0, sticky=customtkinter.NSEW)
+        self._query_widgets(self._init_frame)
+        self._table(self._init_frame)
+
+        # settings
+        self._init_frame.rowconfigure(0, weight=1)
+        self._init_frame.columnconfigure(0, weight=1, minsize=300)
+        self._init_frame.columnconfigure(1,weight=1, minsize=900)
+
+    def _query_widgets(self, master):
+        self._controller = customtkinter.CTkFrame(master, corner_radius=0)
         self._controller.grid(row=0, column=0, sticky=customtkinter.NSEW)
 
         self._tabview = customtkinter.CTkTabview(self._controller)
@@ -53,7 +68,7 @@ class HomeScreen(customtkinter.CTkFrame):
 
     def _btn_frame_main(self, main):
         self._btn_main = customtkinter.CTkFrame(main, fg_color='transparent')
-        self._btn_main.grid(row=2, column=0, padx=10, pady=10, columnspan=2, sticky=customtkinter.NSEW)
+        self._btn_main.grid(row=2, column=0, padx=10, pady=(0,10), columnspan=2, sticky=customtkinter.NSEW)
 
         self._btn_export_excel = customtkinter.CTkButton(self._btn_main, text='Exportar a Excel', command=lambda:_export_excel())
         self._btn_export_excel.grid(row=0, column=0, sticky=customtkinter.E)
@@ -114,7 +129,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._name_title = customtkinter.CTkLabel(self._name_view_frame, text='Nombre:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._name_title.grid(row=0, column=0, padx=(0, 10))
 
-        self._name_entry_view = customtkinter.CTkEntry(self._name_view_frame, border_width=0, state='disabled', height=40)
+        self._name_entry_view = customtkinter.CTkEntry(self._name_view_frame, border_width=0, state='disabled', height=setting.HEIGHT)
         self._name_entry_view.grid(row=0, column=1, sticky=customtkinter.NSEW)
 
         self._dni_tlf_frame = customtkinter.CTkFrame(self._view_client_frame)
@@ -124,13 +139,13 @@ class HomeScreen(customtkinter.CTkFrame):
         self._dni_title = customtkinter.CTkLabel(self._dni_tlf_frame, text='DNI:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._dni_title.grid(row=0, column=0, padx=(0,10))
 
-        self._dni_entry_view = customtkinter.CTkEntry(self._dni_tlf_frame, border_width=0, state='disabled', height=40)
+        self._dni_entry_view = customtkinter.CTkEntry(self._dni_tlf_frame, border_width=0, state='disabled', height=setting.HEIGHT)
         self._dni_entry_view.grid(row=0, column=1, padx=(0,5), sticky=customtkinter.NSEW)
 
         self._tlf_title = customtkinter.CTkLabel(self._dni_tlf_frame, text='TLF:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._tlf_title.grid(row=0, column=2, padx=(0,10))
 
-        self._tlf_entry_view = customtkinter.CTkEntry(self._dni_tlf_frame, border_width=0, state='disabled', height=40)
+        self._tlf_entry_view = customtkinter.CTkEntry(self._dni_tlf_frame, border_width=0, state='disabled', height=setting.HEIGHT)
         self._tlf_entry_view.grid(row=0, column=3, sticky=customtkinter.NSEW)
 
         self.list = db()._locations_optionmenu(self.list)
@@ -142,7 +157,7 @@ class HomeScreen(customtkinter.CTkFrame):
                                                 state='disabled')
         self._location_view.grid(row=0, column=0, sticky=customtkinter.NSEW)
         self._location_view.set("Ubicación")
-        self._location_reset = customtkinter.CTkButton(self._location_frame, text='', image=self._logo_img_reset, width=40, command=lambda:self._reset_location(self._location_view))
+        self._location_reset = customtkinter.CTkButton(self._location_frame, text='', image=self._icon_reset, width=setting.HEIGHT, command=lambda:self._reset_location(self._location_view))
         self._location_reset.grid(row=0, column=1, padx=(5,0))
 
         self._mg_ip_frame = customtkinter.CTkFrame(self._view_client_frame)
@@ -152,13 +167,13 @@ class HomeScreen(customtkinter.CTkFrame):
         self._mg_title = customtkinter.CTkLabel(self._mg_ip_frame, text='MG:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._mg_title.grid(row=0, column=0, padx=(0,10))
 
-        self._mg_entry_view = customtkinter.CTkEntry(self._mg_ip_frame, border_width=0, state='disabled', height=40)
+        self._mg_entry_view = customtkinter.CTkEntry(self._mg_ip_frame, border_width=0, state='disabled', height=setting.HEIGHT)
         self._mg_entry_view.grid(row=0, column=1, padx=(0,5), sticky=customtkinter.NSEW)
 
         self._ip_title = customtkinter.CTkLabel(self._mg_ip_frame, text='IP:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._ip_title.grid(row=0, column=2, padx=(0,10))
 
-        self._ip_entry_view = customtkinter.CTkEntry(self._mg_ip_frame, border_width=0, state='disabled', height=40)
+        self._ip_entry_view = customtkinter.CTkEntry(self._mg_ip_frame, border_width=0, state='disabled', height=setting.HEIGHT)
         self._ip_entry_view.grid(row=0, column=3, sticky=customtkinter.NSEW)
 
 
@@ -167,7 +182,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self._email_title = customtkinter.CTkLabel(self._email_frame, text='Email:', font=customtkinter.CTkFont( weight=setting.FONT))
         self._email_title.grid(row=0, column=0, padx=(0, 10))
 
-        self._email_entry_view = customtkinter.CTkEntry(self._email_frame, border_width=0, state='disabled', height=40)
+        self._email_entry_view = customtkinter.CTkEntry(self._email_frame, border_width=0, state='disabled', height=setting.HEIGHT)
         self._email_entry_view.grid(row=0, column=1, sticky=customtkinter.NSEW)
 
         self._pay_state = customtkinter.CTkLabel(self._view_client_frame, text="Estado del Mes:", font=customtkinter.CTkFont( weight=setting.FONT))
@@ -220,16 +235,16 @@ class HomeScreen(customtkinter.CTkFrame):
         self._data = customtkinter.CTkLabel(self._create_client_frame, text="Datos:", font=customtkinter.CTkFont( weight=setting.FONT))
         self._data.grid(row=1, column=0, padx=10, sticky=customtkinter.W)
 
-        self._name_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Nombre del cliente", height=40)
+        self._name_entry = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Nombre del cliente", height=setting.HEIGHT)
         self._name_entry.grid(row=2, column=0,columnspan=2, sticky=customtkinter.NSEW)
         self._name_entry.bind('<Button-1>', self._hide_message_client_frame)
 
-        self._dni_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="DNI", height=40)
+        self._dni_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="DNI", height=setting.HEIGHT)
         self._dni_entry_create.grid(row=3, column=0, pady=(10,0), padx=(0, 10), sticky=customtkinter.NSEW)
         self._dni_entry_create.bind('<Button-1>', self._hide_message_client_frame)
 
 
-        self._tlf_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Número telefonico", height=40)
+        self._tlf_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Número telefonico", height=setting.HEIGHT)
         self._tlf_entry_create.grid(row=3, column=1, pady=(10,0), sticky=customtkinter.NSEW)
         self._tlf_entry_create.bind('<Button-1>', self._hide_message_client_frame)
 
@@ -241,20 +256,20 @@ class HomeScreen(customtkinter.CTkFrame):
                                                     width=200)
         self._location.grid(row=0, column=0, sticky=customtkinter.NSEW)
         self._location.set("Ubicación")
-        self._location_reset = customtkinter.CTkButton(self._location_frame, text='', image=self._logo_img_reset, width=40, command=lambda:self._reset_location(self._location))
+        self._location_reset = customtkinter.CTkButton(self._location_frame, text='', image=self._icon_reset, width=setting.HEIGHT, command=lambda:self._reset_location(self._location))
         self._location_reset.grid(row=0, column=1, padx=(5,0))
 
 
-        self._megas_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Megas", height=40)
+        self._megas_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Megas", height=setting.HEIGHT)
         self._megas_entry_create.grid(row=5, column=0, padx=(0, 10), sticky=customtkinter.NSEW)
         self._megas_entry_create.bind('<Button-1>', self._hide_message_client_frame)
 
 
-        self._ip_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="IP", height=40)
+        self._ip_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="IP", height=setting.HEIGHT)
         self._ip_entry_create.grid(row=5, column=1, sticky=customtkinter.NSEW)
         self._ip_entry_create.bind('<Button-1>', self._hide_message_client_frame)
 
-        self._email_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Correo Electronico", height=40)
+        self._email_entry_create = customtkinter.CTkEntry(self._create_client_frame, placeholder_text="Correo Electronico", height=setting.HEIGHT)
         self._email_entry_create.grid(row=6, column=0, pady=(10,0), columnspan=2, sticky=customtkinter.NSEW)
 
         self._pay_create = customtkinter.CTkLabel(self._create_client_frame, text="Pago de mes:", font=customtkinter.CTkFont( weight=setting.FONT))
@@ -289,7 +304,7 @@ class HomeScreen(customtkinter.CTkFrame):
             fill = tk.BOTH, 
             expand = True)
         
-        self._location_entry = customtkinter.CTkEntry(self._location_settings_frame, placeholder_text='Introduce la ubicación', height=40)
+        self._location_entry = customtkinter.CTkEntry(self._location_settings_frame, placeholder_text='Introduce la ubicación', height=setting.HEIGHT)
         self._location_entry.grid(row=0, column=0, columnspan=2, pady=10, sticky=customtkinter.NSEW)
         self._location_entry.bind('<Button-1>', self._hide_message_location_frame)
 
@@ -331,8 +346,8 @@ class HomeScreen(customtkinter.CTkFrame):
         fl_parameters._get_locations()
 
 # Nombre, ubicacion, IP, MG, Estado
-    def _table(self):
-        self.table = ttk.Treeview(self, columns=('name', 'location', 'IP', 'MG', 'state'), padding=[0,0,0,0,0], style="mystyle.Treeview")
+    def _table(self, master):
+        self.table = ttk.Treeview(master, columns=('name', 'location', 'IP', 'MG', 'state'), padding=[0,0,0,0,0], style="mystyle.Treeview")
         self.table.column('#0', width=0, stretch=tk.NO)
         self.table.heading("#0",text="",anchor=tk.CENTER)
         self.table.column('name', width=340, stretch=0)
@@ -347,7 +362,7 @@ class HomeScreen(customtkinter.CTkFrame):
         self.table.heading('state', text='Estado')
         self.table.tag_configure('Pago', background=setting.CLIENT_PAY)
         self.table.tag_configure('Pendiente', background=setting.CLIENT_EARRING)
-        self.yscroll = customtkinter.CTkScrollbar(self, command=self.table.yview)
+        self.yscroll = customtkinter.CTkScrollbar(master, command=self.table.yview)
         self.yscroll.grid(column=2, row=0, sticky='ns')
 
         self.table.configure(yscrollcommand=self.yscroll.set)
@@ -470,9 +485,8 @@ class HomeScreen(customtkinter.CTkFrame):
         self._counter_mg_state_pay.configure(text=str(counter_mg_pay))
         self._counter_mg_state_earring.configure(text=str(counter_mg_earring))
 
-    def _configure_win(self):
-        self.grid(row=1, column=0, sticky=customtkinter.NSEW)
-        self.columnconfigure(0, weight=1, minsize=300)
-        self.columnconfigure(1, minsize=900)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)
+    def _configure_self(self):
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, minsize=70)
+        self.rowconfigure(1, weight=1)
+        self.rowconfigure(2, minsize=20)
