@@ -6,6 +6,8 @@ import settings.settings as setting
 class LoginScreen(customtkinter.CTkFrame):
     def __init__(self, parent, manager):
         super().__init__(parent)
+        self._user_root = "admin"
+        self._password_root = 'admin'
         self.manager = manager
         self._logo_init = customtkinter.CTkImage(Image.open(os.path.join("img/", "login_img.png")), size=(700, 700))
         self._configure_self()
@@ -34,22 +36,23 @@ class LoginScreen(customtkinter.CTkFrame):
 
         self._user = customtkinter.CTkEntry(self._inputs_frame, placeholder_text='Ingrese el usuario', height=setting.HEIGHT)
         self._user.grid(row=1, column=0, padx=20, pady=(40,0), sticky=customtkinter.NSEW)
+        self._user.bind('<Button-1>', self._hide_message_login)
 
-        self._password = customtkinter.CTkEntry(self._inputs_frame, placeholder_text='Ingrese la contraseña', height=setting.HEIGHT)
+        self._password = customtkinter.CTkEntry(self._inputs_frame, placeholder_text='Ingrese la contraseña', height=setting.HEIGHT, show='*')
         self._password.grid(row=2, column=0, padx=20, pady=(10,0), sticky=customtkinter.NSEW)
+        self._password.bind('<Button-1>', self._hide_message_login)
 
-        self._btn_login = customtkinter.CTkButton(self._inputs_frame, text='Ingresar',command=lambda:self.manager.login_to_home())
+
+        self._btn_login = customtkinter.CTkButton(self._inputs_frame, text='Ingresar',command=self._verification)
         self._btn_login.grid(row=3, column=0, pady=20)
 
-        self._register_app = customtkinter.CTkLabel(self._login_frame, text='Registrar')
-        self._register_app.grid(row=2, column=0, sticky=customtkinter.S)
+        self._message_login = customtkinter.CTkLabel(self._inputs_frame, text='')
 
         # Settings frame
         self._inputs_frame.columnconfigure(0, weight=1)
         self._login_frame.columnconfigure(0, weight=1)
         self._login_frame.rowconfigure(1, weight=1)
         # self._login_frame.rowconfigure(2, weight=1)
-
 
 
     def _img(self):
@@ -61,6 +64,30 @@ class LoginScreen(customtkinter.CTkFrame):
 
         self._img_frame.columnconfigure(0, weight=1)
         self._img_frame.rowconfigure(0, weight=1)
+
+    def _verification(self):
+        if len(self._user.get()) != 0:
+            if len(self._password.get()) != 0:
+                if (self._user.get() == self._user_root) and (self._password.get() == 'admin'):
+                    print('valido')
+                    self.manager.login_to_home()
+                    self._user.delete(0, customtkinter.END)
+                    self._password.delete(0, customtkinter.END)
+                    self._hide_message_login()
+                else:
+                    self._message(self._message_login, 'Datos invalidos', setting.WARNING)
+            else:
+                self._message(self._message_login, 'Introduce la contaseña', setting.WARNING)
+        else:
+            self._message(self._message_login, 'Introduce el usuario', setting.WARNING)
+
+
+    def _hide_message_login(self, e):
+        self._message_login.grid_forget()
+    
+    def _message(self, message, text, color):
+        message.grid(row=4, column=0, columnspan=2, pady=10, padx=10, sticky=customtkinter.NSEW)
+        message.configure(text=text, fg_color=color, corner_radius=60)
 
         
     def _configure_self(self):
