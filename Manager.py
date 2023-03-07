@@ -1,6 +1,4 @@
 import customtkinter
-from components.NavBar import Navbar
-from components.NotificationBar import NotificationBar
 from screens.Home import HomeScreen
 from screens.Login import LoginScreen
 customtkinter.set_appearance_mode("System")
@@ -31,13 +29,6 @@ class Manager(customtkinter.CTk):
     def sign_off(self):
         self.show_frame(LoginScreen)
 
-
-    def _home_screen(self):
-        # main window widget structure
-        self._configure_home_screen()
-        self.navbar = Navbar(master=self.container)
-        self.Home = HomeScreen(master=self.container)
-        self.notification_bar = NotificationBar(master=self.container )
 
     def _configure_window(self):
         # Main window setting

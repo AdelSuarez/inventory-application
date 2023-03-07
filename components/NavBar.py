@@ -46,7 +46,7 @@ class Navbar(customtkinter.CTkFrame):
         self._title_app.grid(row=0, column=0, padx=(20,0), sticky=tk.W)
         self._hour = customtkinter.CTkLabel(self._navbar_frame, text="", font=customtkinter.CTkFont(family='Oswald', size=18, weight="bold"))
         self._hour.grid(row=0, column=1, padx=(0,20))
-        self._btn_sign_off = customtkinter.CTkButton(self._navbar_frame, text='', image=self._icon_sign_off, width=40, command=lambda:self.manager.sign_off())
+        self._btn_sign_off = customtkinter.CTkButton(self._navbar_frame, text='', image=self._icon_sign_off, width=40, fg_color='transparent', hover=False ,command=lambda:self.manager.sign_off())
         self._btn_sign_off.grid(row=0, column=2, padx=(0,10))
 
         # settings frame
