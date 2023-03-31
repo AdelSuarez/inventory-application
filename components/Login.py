@@ -45,7 +45,7 @@ class Login(customtkinter.CTkFrame):
         self._message_login = customtkinter.CTkLabel(self._inputs_frame, text='')
 
         self._btn_register = customtkinter.CTkButton(self._login_frame, text='Registrar', fg_color='transparent', hover=False, command=lambda:self.manager.login_to_register())
-        self._btn_register.grid(row=2, column=0, pady=10)
+        # self._btn_register.grid(row=2, column=0, pady=10)
 
         # Settings frame
         self._inputs_frame.columnconfigure(0, weight=1)
