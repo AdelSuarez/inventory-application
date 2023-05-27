@@ -23,7 +23,7 @@ class LoginScreen(customtkinter.CTkFrame):
             self.frames[f] = frame
             frame.grid(row=0, column=0, sticky=customtkinter.NSEW)
         
-        self.show_frame(Login)
+        self.show_frame(Register)
 
     def show_frame(self, container):
         frame = self.frames[container]
